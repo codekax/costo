@@ -1,0 +1,46 @@
+{
+  "common": {
+    "tagline": "Multi-project, multi-currency expense tracker",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot my password",
+    "magicLink": "Send me a magic link",
+    "loggingIn": "Signing in…"
+  },
+  "nav": {
+    "dashboard": "Home",
+    "expenses": "Expenses",
+    "projects": "Projects",
+    "categories": "Categories",
+    "vendors": "Vendors",
+    "import": "Import",
+    "settings": "Settings"
+  },
+  "errors": {
+    "invalid_input": "Check the data you entered",
+    "unauthenticated": "Sign in to continue",
+    "forbidden": "You do not have permission for this action",
+    "not_found": "Resource not found",
+    "conflict": "A record with those values already exists",
+    "stale": "Another member modified this while you were editing",
+    "limit_reached": "You reached the maximum limit",
+    "expired": "The invitation expired",
+    "fx_unavailable": "No exchange rate available for that date",
+    "storage_failed": "File upload failed",
+    "unknown": "Something went wrong — please try again"
+  }
+}

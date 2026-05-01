@@ -1,0 +1,19 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      { "prefer": "type-imports", "fixStyle": "inline-type-imports" }
+    ],
+    "no-console": ["error", { "allow": ["warn", "error"] }]
+  },
+  "overrides": [
+    {
+      "files": ["src/lib/logger.ts", "tests/**/*", "*.config.*"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

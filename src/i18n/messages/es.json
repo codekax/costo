@@ -1,0 +1,46 @@
+{
+  "common": {
+    "tagline": "Tracking de gastos multi-proyecto y multi-moneda",
+    "loading": "Cargando…",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Borrar",
+    "edit": "Editar",
+    "create": "Crear",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "next": "Siguiente"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "signOut": "Cerrar sesión",
+    "email": "Email",
+    "password": "Contraseña",
+    "forgotPassword": "Olvidé mi contraseña",
+    "magicLink": "Enviarme un link mágico",
+    "loggingIn": "Iniciando sesión…"
+  },
+  "nav": {
+    "dashboard": "Inicio",
+    "expenses": "Gastos",
+    "projects": "Proyectos",
+    "categories": "Categorías",
+    "vendors": "Proveedores",
+    "import": "Importar",
+    "settings": "Ajustes"
+  },
+  "errors": {
+    "invalid_input": "Revisá los datos ingresados",
+    "unauthenticated": "Iniciá sesión para continuar",
+    "forbidden": "No tenés permisos para esta acción",
+    "not_found": "Recurso no encontrado",
+    "conflict": "Ya existe un registro con esos datos",
+    "stale": "Otro miembro modificó esto mientras editabas",
+    "limit_reached": "Alcanzaste el límite máximo",
+    "expired": "La invitación expiró",
+    "fx_unavailable": "No hay tasa de cambio para esa fecha",
+    "storage_failed": "No se pudo subir el archivo",
+    "unknown": "Algo salió mal — intentá de nuevo"
+  }
+}

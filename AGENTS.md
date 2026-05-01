@@ -222,7 +222,6 @@ export const supabaseAdmin = createClient(URL, SERVICE_ROLE_KEY);
   "strictNullChecks": true,
   "noImplicitReturns": true,
   "noUncheckedIndexedAccess": true,
-  "exactOptionalPropertyTypes": true,
   "noFallthroughCasesInSwitch": true
 }
 ```
@@ -241,6 +240,8 @@ function isExpense(data: unknown): data is Expense {
 
 All public functions and Server Actions must have explicit types on parameters and return values.
 Always validate external inputs with Zod (request bodies, search params, env vars, file uploads, OCR responses).
+
+> **Note:** `exactOptionalPropertyTypes` is intentionally left **off** (was ON in constitution v1.0.0). Reason: shadcn/ui + Radix primitives pass `undefined` through props as a matter of design, and forcing every spread to be exact creates per-import patching that violates principle VII (anti-overengineering). The remaining strict flags catch all the meaningful nullability bugs.
 
 ---
 
@@ -617,3 +618,11 @@ Verify before delivering any implementation:
 - [ ] Mobile + desktop smoke-tested?
 - [ ] Relevant skills read and applied?
 - [ ] Spec under `specs/` reviewed for the feature being implemented?
+- [ ] Spec under `specs/` reviewed for the feature being implemented?
+
+## Active Technologies
+- TypeScript 5.6+ (strict mode con `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes`) + Next.js 15 (App Router, RSC, Server Actions), React 19, Tailwind v4, shadcn/ui, TanStack Query v5, Zustand, React Hook Form, Zod, @supabase/ssr, next-intl, next-pwa, SheetJS, @tremor/react + recharts, date-fns, lucide-react, sonner (001-mvp-core)
+- Supabase Postgres (managed) + Supabase Storage (attachments) + RLS workspace-scoped policies (001-mvp-core)
+
+## Recent Changes
+- 001-mvp-core: Added TypeScript 5.6+ (strict mode con `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes`) + Next.js 15 (App Router, RSC, Server Actions), React 19, Tailwind v4, shadcn/ui, TanStack Query v5, Zustand, React Hook Form, Zod, @supabase/ssr, next-intl, next-pwa, SheetJS, @tremor/react + recharts, date-fns, lucide-react, sonner
