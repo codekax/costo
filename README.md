@@ -28,20 +28,8 @@ Visitar http://localhost:3000 → redirige a `/es/login`.
 1. **Crear proyecto** en supabase.com
 2. **Copiar** URL del proyecto y anon key a `.env.local` como `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 3. **Copiar** service role key a `SUPABASE_SERVICE_ROLE_KEY`
-4. **Aplicar migrations** — abrir SQL Editor en el dashboard y pegar en orden los archivos de `supabase/migrations/`:
-   - `0001_init_workspaces_members_invitations.sql`
-   - `0002_init_projects_categories_vendors.sql`
-   - `0003_init_expenses.sql`
-   - `0004_init_recurring_expenses.sql`
-   - `0005_init_daily_fx_rates.sql`
-   - `0006_seed_categories_function.sql`
-   - `0007_immutability_triggers.sql`
-   - `0008_storage_attachments.sql`
-5. **Seed inicial de FX** — opcional para arrancar antes de que corra el cron:
-   ```sql
-   insert into daily_fx_rates (date, ars_per_usd_official, source)
-   values (current_date, 1050, 'manual-seed');
-   ```
+4. **Aplicar schema** — abrir SQL Editor en el dashboard y pegar **todo** el contenido de [`supabase/setup.sql`](./supabase/setup.sql) en una sola corrida (incluye las 8 migrations + seed inicial de FX).
+   - Si necesitás re-aplicar desde cero, antes corré [`supabase/teardown.sql`](./supabase/teardown.sql) para limpiar.
 6. **Auth providers** — Authentication → Providers → activar Email (default) y opcionalmente Magic Link
 7. **Auth URLs** — agregar `http://localhost:3000/**` y `http://localhost:3000/auth/callback` a redirect URLs
 

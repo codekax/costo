@@ -2,36 +2,6 @@
 -- Constitution principles II (RLS day 1) + III (workspace isolation)
 
 -- ============================================================================
--- Helper functions (used by RLS policies across all migrations)
--- ============================================================================
-
-create or replace function public.is_workspace_member(ws_id uuid)
-returns boolean
-language sql
-security definer
-stable
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.workspace_members
-    where workspace_id = ws_id and user_id = auth.uid()
-  );
-$$;
-
-create or replace function public.is_workspace_owner(ws_id uuid)
-returns boolean
-language sql
-security definer
-stable
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.workspace_members
-    where workspace_id = ws_id and user_id = auth.uid() and role = 'owner'
-  );
-$$;
-
--- ============================================================================
 -- workspaces
 -- ============================================================================
 
@@ -110,6 +80,36 @@ create unique index invitations_pending_unique
 
 create index invitations_token_idx on public.invitations(token) where accepted_at is null;
 create index invitations_email_idx on public.invitations(email) where accepted_at is null;
+
+-- ============================================================================
+-- Helper functions (used by RLS policies — defined AFTER tables they read)
+-- ============================================================================
+
+create or replace function public.is_workspace_member(ws_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.workspace_members
+    where workspace_id = ws_id and user_id = auth.uid()
+  );
+$$;
+
+create or replace function public.is_workspace_owner(ws_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.workspace_members
+    where workspace_id = ws_id and user_id = auth.uid() and role = 'owner'
+  );
+$$;
 
 -- ============================================================================
 -- RLS
