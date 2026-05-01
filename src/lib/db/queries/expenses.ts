@@ -6,6 +6,10 @@ import type { ExpenseFilters } from '@/lib/schemas/expense';
 
 type Db = Awaited<ReturnType<typeof createServerClient>>;
 
+function escapeIlike(value: string): string {
+  return value.replace(/[\\%_]/g, (m) => `\\${m}`);
+}
+
 export async function getExpenses(
   supabase: Db,
   workspaceId: string,
@@ -26,14 +30,23 @@ export async function getExpenses(
     .limit(limit);
 
   if (filters.projectId !== undefined) {
-    query = filters.projectId === null ? query.is('project_id', null) : query.eq('project_id', filters.projectId);
+    query =
+      filters.projectId === null
+        ? query.is('project_id', null)
+        : query.eq('project_id', filters.projectId);
   }
   if (filters.categoryId) query = query.eq('category_id', filters.categoryId);
   if (filters.vendorId) query = query.eq('vendor_id', filters.vendorId);
   if (filters.currency) query = query.eq('currency', filters.currency);
   if (filters.dateFrom) query = query.gte('paid_at', filters.dateFrom);
   if (filters.dateTo) query = query.lte('paid_at', filters.dateTo);
-  if (filters.search) query = query.textSearch('description', filters.search, { type: 'plain' });
+  if (filters.search && filters.search.trim().length > 0) {
+    const escaped = escapeIlike(filters.search.trim());
+    // Match within description OR notes. The GIN FTS index is leveraged when the
+    // optimizer can use it; for short prefix queries the ILIKE path is acceptable
+    // at our workspace scale (≤5000 rows).
+    query = query.or(`description.ilike.%${escaped}%,notes.ilike.%${escaped}%`);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
