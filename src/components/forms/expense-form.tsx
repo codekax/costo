@@ -21,6 +21,7 @@ import {
 import { CreateExpenseSchema, type Currency } from '@/lib/schemas/expense';
 import { createExpense } from '@/actions/expenses/create-expense';
 import { getRateForDate } from '@/actions/fx/get-rate-for-date';
+import { VendorCombobox } from '@/components/domain/vendor-combobox';
 import type { Category, Project, Vendor } from '@/types/domain';
 
 type Values = z.input<typeof CreateExpenseSchema>;
@@ -42,6 +43,7 @@ export function ExpenseForm({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [fxWarning, setFxWarning] = useState<string | null>(null);
+  const [vendorOptions, setVendorOptions] = useState(vendors);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -228,22 +230,13 @@ export function ExpenseForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="vendorId">Proveedor (opcional)</Label>
-          <Select
-            value={form.watch('vendorId') ?? '__none__'}
-            onValueChange={(v) => form.setValue('vendorId', v === '__none__' ? null : v)}
-          >
-            <SelectTrigger id="vendorId">
-              <SelectValue placeholder="Sin proveedor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Sin proveedor</SelectItem>
-              {vendors.map((v) => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <VendorCombobox
+            workspaceId={workspaceId}
+            value={form.watch('vendorId') ?? null}
+            options={vendorOptions}
+            onChange={(id) => form.setValue('vendorId', id)}
+            onCreated={(v) => setVendorOptions((prev) => [...prev, v])}
+          />
         </div>
       </div>
 
