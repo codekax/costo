@@ -1,13 +1,17 @@
 import { z } from 'zod';
 
+// Treat empty strings as undefined for optional vars (common when .env keys exist but are blank)
+const optionalNonEmpty = (schema: z.ZodTypeAny) =>
+  z.preprocess((v) => (v === '' || v === undefined ? undefined : v), schema.optional());
+
 const ServerEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
-  NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional(),
+  NEXT_PUBLIC_SENTRY_DSN: optionalNonEmpty(z.string().url()),
+  SUPABASE_SERVICE_ROLE_KEY: optionalNonEmpty(z.string().min(20)),
   DOLARAPI_BASE_URL: z.string().url().default('https://dolarapi.com/v1'),
-  RESEND_API_KEY: z.string().min(20).optional(),
+  RESEND_API_KEY: optionalNonEmpty(z.string().min(20)),
   APP_URL: z.string().url().default('http://localhost:3000'),
 });
 
