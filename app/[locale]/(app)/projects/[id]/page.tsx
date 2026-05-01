@@ -12,6 +12,7 @@ import { getProjectById, getProjectTotals } from '@/lib/db/queries/projects';
 import { getExpenses } from '@/lib/db/queries/expenses';
 import { ExpenseRow } from '@/components/domain/expense-row';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { ProjectActions } from './project-actions';
 
 export default async function ProjectDetailPage({
   params,
@@ -63,11 +64,18 @@ export default async function ProjectDetailPage({
             </p>
           )}
         </div>
-        <Button asChild>
-          <Link href={`/expenses/new?project=${id}`}>
-            <Plus className="mr-1 size-4" /> Nuevo gasto
-          </Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ProjectActions
+            id={id}
+            name={project.name}
+            archived={project.archived_at !== null}
+          />
+          <Button asChild>
+            <Link href={`/expenses/new?project=${id}`}>
+              <Plus className="mr-1 size-4" /> Nuevo gasto
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

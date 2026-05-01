@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
-import { Plus, Folder } from 'lucide-react';
+import { Plus, Folder, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,11 +35,18 @@ export default async function ProjectsPage({
               : `${projects.length} proyecto${projects.length === 1 ? '' : 's'} activo${projects.length === 1 ? '' : 's'}`}
           </p>
         </div>
-        <Button asChild>
-          <Link href="/projects/new">
-            <Plus className="mr-1 size-4" /> Nuevo proyecto
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/projects/archived">
+              <Archive className="mr-1 size-4" /> Archivados
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/projects/new">
+              <Plus className="mr-1 size-4" /> Nuevo proyecto
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {projects.length === 0 ? (
