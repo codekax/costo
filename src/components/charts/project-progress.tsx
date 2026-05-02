@@ -1,13 +1,16 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency } from '@/utils/format';
 import type { ProjectWithTotals } from '@/lib/db/queries/projects';
 
 export function ProjectProgressList({ projects }: { projects: ProjectWithTotals[] }) {
+  const t = useTranslations('dashboard');
+  const tProjects = useTranslations('projects');
   if (projects.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        Creá un proyecto para empezar a trackear su progreso.
+        {t('projectsEmpty')}
       </p>
     );
   }
@@ -26,11 +29,11 @@ export function ProjectProgressList({ projects }: { projects: ProjectWithTotals[
           <li key={p.id}>
             <Link href={`/projects/${p.id}`} className="block group">
               <div className="flex items-baseline justify-between gap-3">
-                <span className="truncate text-sm font-medium group-hover:underline">
+                <span className="truncate text-sm [font-weight:500] tracking-[-0.32px] group-hover:underline">
                   {p.name}
                 </span>
                 <span className="text-xs tabular-nums text-muted-foreground">
-                  {p.expense_count} {p.expense_count === 1 ? 'gasto' : 'gastos'}
+                  {tProjects('expensesCount', { count: p.expense_count })}
                 </span>
               </div>
               <div className="mt-2 space-y-1.5">
@@ -74,7 +77,7 @@ function Row({
     <div className="space-y-1">
       <div className="flex items-baseline justify-between gap-2 text-xs">
         <span className="text-muted-foreground">{label}</span>
-        <span className="tabular-nums font-medium">
+        <span className="tabular-nums [font-weight:500]">
           {formatCurrency(amount, currency)}
           {budget !== null && (
             <span className="ml-1 text-muted-foreground">

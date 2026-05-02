@@ -1,8 +1,9 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { ExpenseForm } from '@/components/forms/expense-form';
-import { getActiveWorkspace } from '@/lib/active-workspace';
-import { createServerClient } from '@/lib/supabase/server';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjects } from '@/lib/db/queries/projects';
 import { getCategories } from '@/lib/db/queries/categories';
 import { getVendors } from '@/lib/db/queries/vendors';
@@ -14,33 +15,30 @@ export default async function NewExpensePage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ project?: string }>;
 }) {
-  const { locale } = await params;
-  const { project } = await searchParams;
+  const [{ locale }, { project }] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
+  const t = await getTranslations('expenses');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
+  const { workspace, supabase } = await requireWorkspaceContext();
   const [projects, categories, vendors] = await Promise.all([
-    getProjects(supabase, ws.active.id),
-    getCategories(supabase, ws.active.id),
-    getVendors(supabase, ws.active.id),
+    getProjects(supabase, workspace.id),
+    getCategories(supabase, workspace.id),
+    getVendors(supabase, workspace.id),
   ]);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Nuevo gasto</h1>
-        <p className="text-sm text-muted-foreground">Workspace: {ws.active.name}</p>
-      </div>
+      <PageHeader
+        title={t('newExpense')}
+        description={t('newPageDescription', { workspace: workspace.name })}
+      />
       <Card>
         <CardHeader>
-          <CardTitle>Datos del gasto</CardTitle>
+          <CardTitle>{t('formCardTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ExpenseForm
-            workspaceId={ws.active.id}
+            workspaceId={workspace.id}
             projects={projects.map((p) => ({ id: p.id, name: p.name }))}
             categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
             vendors={vendors.map((v) => ({ id: v.id, name: v.name }))}

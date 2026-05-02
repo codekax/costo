@@ -41,11 +41,13 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">{t('forgotPassword')}</CardTitle>
+        <CardTitle className="text-[36px] leading-[1.05] tracking-[-0.72px] [font-weight:500]">
+          {t('forgotPassword')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {sent ? (
-          <p className="text-sm text-muted-foreground">Listo — revisá tu email.</p>
+          <p className="text-sm text-muted-foreground">{t('checkEmail')}</p>
         ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">

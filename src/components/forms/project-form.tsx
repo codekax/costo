@@ -1,119 +1,104 @@
 'use client';
 
-import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import type { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { CreateProjectSchema, type ProjectType } from '@/lib/schemas/project';
+import { ProjectTypeCombobox } from '@/components/domain/project-type-combobox';
+import { CreateProjectSchema } from '@/lib/schemas/project';
 import { createProject } from '@/actions/projects/create-project';
+import { useServerAction } from '@/hooks/use-server-action';
 
-type Values = z.input<typeof CreateProjectSchema>;
+/**
+ * Explicit form value shape — does NOT use `z.input` because the Zod schema's
+ * `z.preprocess(...)` widens the input type to `unknown`, which breaks RHF's
+ * inference and the post-submit cleanup logic.
+ */
+type Values = {
+  workspaceId: string;
+  name: string;
+  type: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  budgetArs?: number;
+  budgetUsd?: number;
+};
 
-const projectTypes: { value: ProjectType; label: string }[] = [
-  { value: 'renovation', label: 'Renovación / Construcción' },
-  { value: 'general', label: 'General' },
-  { value: 'other', label: 'Otro' },
-];
-
-export function ProjectForm({ workspaceId }: { workspaceId: string }) {
-  const tErrors = useTranslations('errors');
+export function ProjectForm({
+  workspaceId,
+  existingTypes,
+}: {
+  workspaceId: string;
+  existingTypes: string[];
+}) {
+  const t = useTranslations('toasts');
+  const tCommon = useTranslations('common');
+  const tProjects = useTranslations('projects');
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
 
   const form = useForm<Values>({
     resolver: zodResolver(CreateProjectSchema),
     defaultValues: {
       workspaceId,
-      type: 'general',
+      type: 'General',
       name: '',
       description: '',
     },
   });
 
-  function onSubmit(values: Values) {
-    startTransition(async () => {
-      const cleaned = {
-        ...values,
-        description: values.description?.trim() || undefined,
-        startDate: values.startDate || undefined,
-        endDate: values.endDate || undefined,
-        budgetArs: values.budgetArs || undefined,
-        budgetUsd: values.budgetUsd || undefined,
-      };
-      const result = await createProject(cleaned);
-      if (!result.ok) {
-        toast.error(tErrors(result.error));
-        return;
-      }
-      toast.success('Proyecto creado');
-      router.push(`/projects/${result.data.projectId}`);
-      router.refresh();
-    });
-  }
+  const submit = useServerAction(createProject, {
+    successMessage: t('projectCreated'),
+    onSuccess: (data) => router.push(`/projects/${data.projectId}`),
+  });
 
-  const t = form.watch('type');
+  const type = form.watch('type');
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={form.handleSubmit(submit.run)} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="name">Nombre del proyecto</Label>
-        <Input id="name" placeholder="Expansión casa" {...form.register('name')} />
+        <Label htmlFor="name">{tProjects('name')}</Label>
+        <Input id="name" placeholder={tProjects('namePlaceholder')} {...form.register('name')} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type">Tipo</Label>
-        <Select value={t} onValueChange={(v) => form.setValue('type', v as ProjectType)}>
-          <SelectTrigger id="type">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {projectTypes.map((pt) => (
-              <SelectItem key={pt.value} value={pt.value}>
-                {pt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Label>{tProjects('type')}</Label>
+        <ProjectTypeCombobox
+          value={type}
+          existingTypes={existingTypes}
+          onChange={(v) => form.setValue('type', v ?? '', { shouldValidate: true })}
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">{tProjects('description')}</Label>
         <Textarea
           id="description"
           rows={3}
-          placeholder="Notas opcionales sobre el proyecto"
+          placeholder={tProjects('descriptionPlaceholder')}
           {...form.register('description')}
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="startDate">Inicio</Label>
+          <Label htmlFor="startDate">{tProjects('startDateOptional')}</Label>
           <Input id="startDate" type="date" {...form.register('startDate')} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="endDate">Fin</Label>
+          <Label htmlFor="endDate">{tProjects('endDateOptional')}</Label>
           <Input id="endDate" type="date" {...form.register('endDate')} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="budgetArs">Presupuesto ARS (opcional)</Label>
+          <Label htmlFor="budgetArs">{tProjects('budgetArsOptional')}</Label>
           <Input
             id="budgetArs"
             type="number"
@@ -123,7 +108,7 @@ export function ProjectForm({ workspaceId }: { workspaceId: string }) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="budgetUsd">Presupuesto USD (opcional)</Label>
+          <Label htmlFor="budgetUsd">{tProjects('budgetUsdOptional')}</Label>
           <Input
             id="budgetUsd"
             type="number"
@@ -136,10 +121,10 @@ export function ProjectForm({ workspaceId }: { workspaceId: string }) {
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={() => router.back()}>
-          Cancelar
+          {tCommon('cancel')}
         </Button>
-        <Button type="submit" disabled={pending}>
-          {pending ? '…' : 'Crear proyecto'}
+        <Button type="submit" disabled={submit.pending}>
+          {submit.pending ? '…' : tProjects('createProject')}
         </Button>
       </div>
     </form>

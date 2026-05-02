@@ -1,6 +1,7 @@
 'use client';
 
 import { CalendarRange, Tag, Users, Coins, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useExpenseFilters } from '@/hooks/use-expense-filters';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ export function FilterBar({
   categories: Option[];
   vendors: Option[];
 }) {
+  const t = useTranslations('filters');
   const [filters, setFilters] = useExpenseFilters();
 
   const activeCount =
@@ -52,12 +54,12 @@ export function FilterBar({
             <CalendarRange className="mr-1 size-4" />
             {filters.from || filters.to
               ? `${fromIso || '…'} → ${toIso || '…'}`
-              : 'Rango de fechas'}
+              : t('dateRange')}
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-72 space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="from">Desde</Label>
+            <Label htmlFor="from">{t('from')}</Label>
             <Input
               id="from"
               type="date"
@@ -68,7 +70,7 @@ export function FilterBar({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="to">Hasta</Label>
+            <Label htmlFor="to">{t('to')}</Label>
             <Input
               id="to"
               type="date"
@@ -85,7 +87,7 @@ export function FilterBar({
               className="w-full"
               onClick={() => void setFilters({ from: null, to: null })}
             >
-              Limpiar fechas
+              {t('clearDates')}
             </Button>
           )}
         </PopoverContent>
@@ -94,7 +96,7 @@ export function FilterBar({
       {/* Category */}
       <FilterPill
         active={!!filters.category}
-        label={categoryName ?? 'Categoría'}
+        label={categoryName ?? t('category')}
         icon={<Tag className="mr-1 size-4" />}
         onClear={() => void setFilters({ category: '' })}
       >
@@ -103,10 +105,10 @@ export function FilterBar({
           onValueChange={(v) => void setFilters({ category: v === 'all' ? '' : v })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Todas" />
+            <SelectValue placeholder={t('all')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="all">{t('all')}</SelectItem>
             {categories.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 <span className="flex items-center gap-2">
@@ -127,7 +129,7 @@ export function FilterBar({
       {/* Vendor */}
       <FilterPill
         active={!!filters.vendor}
-        label={vendorName ?? 'Proveedor'}
+        label={vendorName ?? t('vendor')}
         icon={<Users className="mr-1 size-4" />}
         onClear={() => void setFilters({ vendor: '' })}
       >
@@ -136,10 +138,10 @@ export function FilterBar({
           onValueChange={(v) => void setFilters({ vendor: v === 'all' ? '' : v })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Todos" />
+            <SelectValue placeholder={t('allMasc')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t('allMasc')}</SelectItem>
             {vendors.map((v) => (
               <SelectItem key={v.id} value={v.id}>
                 {v.name}
@@ -152,7 +154,7 @@ export function FilterBar({
       {/* Currency */}
       <FilterPill
         active={!!filters.currency}
-        label={filters.currency ?? 'Moneda'}
+        label={filters.currency ?? t('currency')}
         icon={<Coins className="mr-1 size-4" />}
         onClear={() => void setFilters({ currency: null })}
       >
@@ -166,7 +168,7 @@ export function FilterBar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="all">{t('all')}</SelectItem>
             <SelectItem value="ARS">ARS</SelectItem>
             <SelectItem value="USD">USD</SelectItem>
           </SelectContent>
@@ -187,7 +189,7 @@ export function FilterBar({
             })
           }
         >
-          Limpiar todo
+          {t('clearAll')}
           <Badge variant="secondary" className="ml-2 px-1.5">
             {activeCount}
           </Badge>
@@ -210,6 +212,7 @@ function FilterPill({
   onClear: () => void;
   children: React.ReactNode;
 }) {
+  const t = useTranslations('filters');
   return (
     <div className="inline-flex items-center">
       <Popover>
@@ -230,7 +233,7 @@ function FilterPill({
           size="icon"
           className="ml-1 size-7"
           onClick={onClear}
-          aria-label={`Limpiar ${label}`}
+          aria-label={t('clearLabel', { label })}
         >
           <X className="size-3" />
         </Button>

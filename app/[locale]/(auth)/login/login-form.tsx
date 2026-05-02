@@ -63,8 +63,10 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">{t('signIn')}</CardTitle>
-        <CardDescription>costo</CardDescription>
+        <CardTitle className="text-[36px] leading-[1.05] tracking-[-0.72px] [font-weight:500]">
+          {t('signIn')}
+        </CardTitle>
+        <CardDescription>{t('loginSubtitle', { email: t('email'), brand: 'costo' })}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="password" className="w-full">
@@ -116,7 +118,7 @@ export function LoginForm() {
           <TabsContent value="magic" className="mt-4">
             {magicLinkSent ? (
               <p className="text-sm text-muted-foreground">
-                Link enviado. Revisá tu email.
+                {t('magicLinkSent')}
               </p>
             ) : (
               <form onSubmit={magicForm.handleSubmit(onMagicLinkSubmit)} className="space-y-4">

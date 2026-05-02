@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { formatCurrency } from '@/utils/format';
 import type { VendorBreakdown } from '@/lib/db/queries/dashboard';
 
 export function TopVendors({ data }: { data: VendorBreakdown[] }) {
+  const t = useTranslations('dashboard');
+  const tProjects = useTranslations('projects');
   if (data.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        Asigná proveedores a tus gastos para ver ranking.
+        {t('vendorsEmpty')}
       </p>
     );
   }
@@ -22,12 +25,12 @@ export function TopVendors({ data }: { data: VendorBreakdown[] }) {
           <li key={v.id}>
             <Link
               href={`/expenses?vendor=${v.id}`}
-              className="block rounded-md p-2 transition-colors hover:bg-accent/40"
+              className="block rounded-md p-3 transition-colors hover:bg-foreground/5"
             >
               <div className="flex items-baseline justify-between gap-3">
-                <span className="truncate text-sm font-medium">{v.name}</span>
+                <span className="truncate text-sm [font-weight:500] tracking-[-0.32px]">{v.name}</span>
                 <span className="text-xs tabular-nums text-muted-foreground">
-                  {v.count} {v.count === 1 ? 'gasto' : 'gastos'}
+                  {tProjects('expensesCount', { count: v.count })}
                 </span>
               </div>
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">

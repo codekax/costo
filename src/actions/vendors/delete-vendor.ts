@@ -1,35 +1,24 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { DeleteVendorSchema } from '@/lib/schemas/vendor';
-import { createServerClient } from '@/lib/supabase/server';
-import { logger } from '@/lib/logger';
-import { actionError, actionOk, type ActionResult } from '@/actions/_shared';
+import { actionError, actionOk, defineAction } from '@/actions/_define-action';
 
-export async function deleteVendor(input: unknown): Promise<ActionResult> {
-  const parsed = DeleteVendorSchema.safeParse(input);
-  if (!parsed.success) return actionError('invalid_input');
-
-  try {
-    const supabase = await createServerClient();
-
+export const deleteVendor = defineAction<typeof DeleteVendorSchema, void>({
+  schema: DeleteVendorSchema,
+  context: 'vendors.deleteVendor',
+  revalidate: ['/vendors', '/expenses'],
+  handler: async ({ data, supabase }) => {
     const { data: vendor } = await supabase
       .from('vendors')
       .select('name')
-      .eq('id', parsed.data.id)
+      .eq('id', data.id)
       .maybeSingle();
 
     if (!vendor) return actionError('not_found');
-    if (vendor.name !== parsed.data.confirmation) return actionError('invalid_input');
+    if (vendor.name !== data.confirmation) return actionError('invalid_input');
 
-    const { error } = await supabase.from('vendors').delete().eq('id', parsed.data.id);
+    const { error } = await supabase.from('vendors').delete().eq('id', data.id);
     if (error) throw error;
-
-    revalidatePath('/vendors');
-    revalidatePath('/expenses');
     return actionOk(undefined);
-  } catch (error) {
-    logger.error('vendors.deleteVendor', { error });
-    return actionError('unknown');
-  }
-}
+  },
+});

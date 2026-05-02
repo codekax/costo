@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { createServerClient } from '@/lib/supabase/server';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getExpenseById } from '@/lib/db/queries/expenses';
-import { getActiveWorkspace } from '@/lib/active-workspace';
 import { formatCurrency, formatDate } from '@/utils/format';
+
 import { DeleteExpenseButton } from './delete-expense-button';
 
 export default async function ExpenseDetailPage({
@@ -15,20 +16,18 @@ export default async function ExpenseDetailPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('expenses');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
+  const { workspace, supabase } = await requireWorkspaceContext();
   const expense = await getExpenseById(supabase, id);
-  if (!expense || expense.workspace_id !== ws.active.id) notFound();
+  if (!expense || expense.workspace_id !== workspace.id) notFound();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {expense.description || 'Gasto'}
+          <h1 className="text-[36px] leading-[1.22] tracking-[-0.72px] [font-weight:500]">
+            {expense.description || t('detailFallbackTitle')}
           </h1>
           <p className="text-sm text-muted-foreground">
             {formatDate(expense.paid_at)} ·{' '}
@@ -45,28 +44,37 @@ export default async function ExpenseDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Monto</CardTitle>
+          <CardTitle className="text-base">{t('amountSectionTitle')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <p className="text-3xl font-bold tabular-nums">
+        <CardContent className="space-y-3">
+          <p className="text-3xl tabular-nums tracking-[-0.03em] [font-weight:540]">
             {formatCurrency(Number(expense.amount), expense.currency)}
           </p>
-          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-            <span>Equiv. ARS: {formatCurrency(Number(expense.amount_ars), 'ARS')}</span>
-            <span>Equiv. USD: {formatCurrency(Number(expense.amount_usd), 'USD')}</span>
-            <span>Tasa usada: {Number(expense.fx_rate_used)}</span>
-          </div>
+          <p className="text-sm tabular-nums text-muted-foreground">
+            ≈{' '}
+            {expense.currency === 'USD'
+              ? formatCurrency(Number(expense.amount_ars), 'ARS')
+              : formatCurrency(Number(expense.amount_usd), 'USD')}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {t('rateUsed')}{' '}
+            <span className="tabular-nums">
+              {Number(expense.fx_rate_used).toLocaleString('es-AR', {
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Detalles</CardTitle>
+          <CardTitle className="text-base">{t('detailsSectionTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <Row label="Proyecto" value={expense.project?.name ?? 'Generales'} />
-          <Row label="Proveedor" value={expense.vendor?.name ?? '—'} />
-          {expense.notes && <Row label="Notas" value={expense.notes} />}
+          <Row label={t('fieldProject')} value={expense.project?.name ?? t('rowProjectGeneral')} />
+          <Row label={t('fieldVendor')} value={expense.vendor?.name ?? t('fieldEmpty')} />
+          {expense.notes && <Row label={t('fieldNotes')} value={expense.notes} />}
         </CardContent>
       </Card>
     </div>

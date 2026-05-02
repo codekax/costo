@@ -1,29 +1,23 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { ArchiveProjectSchema } from '@/lib/schemas/project';
-import { createServerClient } from '@/lib/supabase/server';
-import { logger } from '@/lib/logger';
-import { actionError, actionOk, type ActionResult } from '@/actions/_shared';
+import { actionOk, defineAction, type ActionResult } from '@/actions/_define-action';
 
-export async function archiveProject(input: unknown): Promise<ActionResult> {
-  const parsed = ArchiveProjectSchema.safeParse(input);
-  if (!parsed.success) return actionError('invalid_input');
-
-  try {
-    const supabase = await createServerClient();
+const impl = defineAction<typeof ArchiveProjectSchema, void>({
+  schema: ArchiveProjectSchema,
+  context: 'projects.archiveProject',
+  revalidate: ['/projects', '/projects/archived'],
+  handler: async ({ data, supabase }) => {
     const { error } = await supabase
       .from('projects')
-      .update({ archived_at: parsed.data.archive ? new Date().toISOString() : null })
-      .eq('id', parsed.data.id);
+      .update({ archived_at: data.archive ? new Date().toISOString() : null })
+      .eq('id', data.id);
 
     if (error) throw error;
-
-    revalidatePath('/projects');
-    revalidatePath('/projects/archived');
     return actionOk(undefined);
-  } catch (error) {
-    logger.error('projects.archiveProject', { error });
-    return actionError('unknown');
-  }
+  },
+});
+
+export async function archiveProject(input: unknown): Promise<ActionResult<void>> {
+  return impl(input);
 }

@@ -20,6 +20,7 @@ type SignUpValues = z.infer<typeof SignUpSchema>;
 export function SignupForm() {
   const t = useTranslations('auth');
   const tErrors = useTranslations('errors');
+  const tToasts = useTranslations('toasts');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -35,7 +36,7 @@ export function SignupForm() {
         toast.error(tErrors(result.error));
         return;
       }
-      toast.success('Cuenta creada — revisá tu email para confirmar.');
+      toast.success(tToasts('accountCreated'));
       router.push('/login');
     });
   }
@@ -43,13 +44,15 @@ export function SignupForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">{t('signUp')}</CardTitle>
-        <CardDescription>Vas a recibir un workspace personal automáticamente.</CardDescription>
+        <CardTitle className="text-[36px] leading-[1.05] tracking-[-0.72px] [font-weight:500]">
+          {t('signUp')}
+        </CardTitle>
+        <CardDescription>{t('signupHint')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre (opcional)</Label>
+            <Label htmlFor="name">{t('nameOptional')}</Label>
             <Input id="name" type="text" autoComplete="name" {...form.register('name')} />
           </div>
           <div className="space-y-2">
@@ -64,7 +67,7 @@ export function SignupForm() {
               autoComplete="new-password"
               {...form.register('password')}
             />
-            <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
+            <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
           </div>
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? '…' : t('signUp')}

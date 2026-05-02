@@ -5,6 +5,20 @@ import { ThemeProvider } from 'next-themes';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { useState, type ReactNode } from 'react';
 
+/**
+ * App-level providers.
+ *
+ * QueryClient is created via `useState` factory so we get one instance per
+ * client mount (App Router pattern — never instantiate at module scope, that
+ * would leak state across users in SSR).
+ *
+ * Defaults are conservative:
+ *  - staleTime 60s: most domain data (categories, vendors, projects) doesn't
+ *    change in seconds, no need to refetch on every mount
+ *  - gcTime 5min: keep cached data around long enough for back-nav to feel instant
+ *  - refetchOnWindowFocus false: editorial app, not a trading dashboard
+ *  - retry once: avoid hammering the server on transient errors
+ */
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(
     () =>
@@ -12,7 +26,12 @@ export function Providers({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
             refetchOnWindowFocus: false,
+            retry: 1,
+          },
+          mutations: {
+            retry: 0,
           },
         },
       }),

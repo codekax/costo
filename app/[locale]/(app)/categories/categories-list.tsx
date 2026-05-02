@@ -36,6 +36,10 @@ export function CategoriesList({
   const [confirmation, setConfirmation] = useState('');
   const [pending, startTransition] = useTransition();
   const tErrors = useTranslations('errors');
+  const tToasts = useTranslations('toasts');
+  const tCommon = useTranslations('common');
+  const tConfirm = useTranslations('confirm');
+  const t = useTranslations('categories');
 
   function refresh() {
     router.refresh();
@@ -49,7 +53,7 @@ export function CategoriesList({
         toast.error(tErrors(result.error));
         return;
       }
-      toast.success('Categoría borrada');
+      toast.success(tToasts('categoryDeleted'));
       setDeleting(null);
       setConfirmation('');
       refresh();
@@ -62,12 +66,12 @@ export function CategoriesList({
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
-              <Plus className="mr-1 size-4" /> Nueva categoría
+              <Plus className="mr-1 size-4" /> {t('newCategory')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Nueva categoría</DialogTitle>
+              <DialogTitle>{t('newCategory')}</DialogTitle>
             </DialogHeader>
             <CategoryForm
               workspaceId={workspaceId}
@@ -82,7 +86,7 @@ export function CategoriesList({
 
       {categories.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
-          Sin categorías. Creá la primera.
+          {t('empty')}
         </p>
       ) : (
         <ul className="divide-y rounded-md border">
@@ -91,23 +95,27 @@ export function CategoriesList({
             return (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 p-3 hover:bg-accent/30"
+                className="flex items-center justify-between gap-3 p-3 transition-colors hover:bg-foreground/[0.04]"
               >
                 <div className="flex items-center gap-3">
+                  {/* Circular portrait — matches the live preview in CategoryForm */}
                   <span
-                    className="flex size-8 items-center justify-center rounded-md"
-                    style={{ backgroundColor: `${c.color}20`, color: c.color }}
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: `${c.color}1a`, color: c.color }}
+                    aria-hidden
                   >
-                    <Icon className="size-4" />
+                    <Icon className="size-[18px]" strokeWidth={1.75} />
                   </span>
-                  <span className="font-medium">{c.name}</span>
+                  <span className="text-base [font-weight:500] tracking-[-0.32px]">
+                    {c.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setEditing(c)}
-                    aria-label={`Editar ${c.name}`}
+                    aria-label={t('editAria', { name: c.name })}
                   >
                     <Pencil className="size-4" />
                   </Button>
@@ -115,7 +123,7 @@ export function CategoriesList({
                     variant="ghost"
                     size="icon"
                     onClick={() => setDeleting(c)}
-                    aria-label={`Borrar ${c.name}`}
+                    aria-label={t('deleteAria', { name: c.name })}
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -130,7 +138,7 @@ export function CategoriesList({
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editar categoría</DialogTitle>
+            <DialogTitle>{t('editCategory')}</DialogTitle>
           </DialogHeader>
           {editing && (
             <CategoryForm
@@ -157,15 +165,14 @@ export function CategoriesList({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Borrar categoría</DialogTitle>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
             <DialogDescription>
-              Esto va a borrar la categoría <strong>{deleting?.name}</strong> y todos sus gastos
-              asociados. Esta acción no se puede deshacer.
+              {t('deleteDescription', { name: deleting?.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <Label htmlFor="confirm">
-              Escribí <strong>{deleting?.name}</strong> para confirmar
+              {t('typeToConfirm', { name: deleting?.name ?? '' })}
             </Label>
             <Input
               id="confirm"
@@ -181,14 +188,14 @@ export function CategoriesList({
                 setConfirmation('');
               }}
             >
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               disabled={pending || confirmation !== deleting?.name}
               onClick={onDelete}
             >
-              {pending ? '…' : 'Borrar definitivamente'}
+              {pending ? '…' : tConfirm('deleteForever')}
             </Button>
           </DialogFooter>
         </DialogContent>

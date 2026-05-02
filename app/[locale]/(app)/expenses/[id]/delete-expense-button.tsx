@@ -11,17 +11,19 @@ import { deleteExpense } from '@/actions/expenses/delete-expense';
 export function DeleteExpenseButton({ id }: { id: string }) {
   const router = useRouter();
   const tErrors = useTranslations('errors');
+  const tToasts = useTranslations('toasts');
+  const tExpenses = useTranslations('expenses');
   const [pending, startTransition] = useTransition();
 
   function onClick() {
-    if (!confirm('¿Borrar este gasto? Esta acción no se puede deshacer.')) return;
+    if (!confirm(tExpenses('confirmDelete'))) return;
     startTransition(async () => {
       const result = await deleteExpense({ id });
       if (!result.ok) {
         toast.error(tErrors(result.error));
         return;
       }
-      toast.success('Gasto borrado');
+      toast.success(tToasts('expenseDeleted'));
       router.push('/expenses');
       router.refresh();
     });
@@ -33,9 +35,9 @@ export function DeleteExpenseButton({ id }: { id: string }) {
       size="sm"
       onClick={onClick}
       disabled={pending}
-      aria-label="Borrar gasto"
+      aria-label={tExpenses('deleteAria')}
     >
-      <Trash2 className="mr-1 size-4" /> Borrar
+      <Trash2 className="mr-1 size-4" /> {tExpenses('delete')}
     </Button>
   );
 }

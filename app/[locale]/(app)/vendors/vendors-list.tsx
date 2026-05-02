@@ -35,6 +35,9 @@ export function VendorsList({
   const [confirmation, setConfirmation] = useState('');
   const [pending, startTransition] = useTransition();
   const tErrors = useTranslations('errors');
+  const tToasts = useTranslations('toasts');
+  const tCommon = useTranslations('common');
+  const t = useTranslations('vendors');
 
   function refresh() {
     router.refresh();
@@ -48,7 +51,7 @@ export function VendorsList({
         toast.error(tErrors(result.error));
         return;
       }
-      toast.success('Proveedor borrado');
+      toast.success(tToasts('vendorDeleted'));
       setDeleting(null);
       setConfirmation('');
       refresh();
@@ -61,12 +64,12 @@ export function VendorsList({
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
-              <Plus className="mr-1 size-4" /> Nuevo proveedor
+              <Plus className="mr-1 size-4" /> {t('newVendor')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Nuevo proveedor</DialogTitle>
+              <DialogTitle>{t('newVendor')}</DialogTitle>
             </DialogHeader>
             <VendorForm
               workspaceId={workspaceId}
@@ -81,12 +84,12 @@ export function VendorsList({
 
       {vendors.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
-          Sin proveedores. Creá el primero o agregalos al cargar un gasto.
+          {t('empty')}
         </p>
       ) : (
         <ul className="divide-y rounded-md border">
           {vendors.map((v) => (
-            <li key={v.id} className="flex items-center justify-between gap-3 p-3 hover:bg-accent/30">
+            <li key={v.id} className="flex items-center justify-between gap-3 p-3 hover:bg-foreground/5">
               <div>
                 <p className="font-medium">{v.name}</p>
                 {v.contact && <p className="text-xs text-muted-foreground">{v.contact}</p>}
@@ -96,7 +99,7 @@ export function VendorsList({
                   variant="ghost"
                   size="icon"
                   onClick={() => setEditing(v)}
-                  aria-label={`Editar ${v.name}`}
+                  aria-label={t('editAria', { name: v.name })}
                 >
                   <Pencil className="size-4" />
                 </Button>
@@ -104,7 +107,7 @@ export function VendorsList({
                   variant="ghost"
                   size="icon"
                   onClick={() => setDeleting(v)}
-                  aria-label={`Borrar ${v.name}`}
+                  aria-label={t('deleteAria', { name: v.name })}
                 >
                   <Trash2 className="size-4" />
                 </Button>
@@ -117,7 +120,7 @@ export function VendorsList({
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editar proveedor</DialogTitle>
+            <DialogTitle>{t('editVendor')}</DialogTitle>
           </DialogHeader>
           {editing && (
             <VendorForm
@@ -143,15 +146,14 @@ export function VendorsList({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Borrar proveedor</DialogTitle>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
             <DialogDescription>
-              Esto borra <strong>{deleting?.name}</strong>. Los gastos asociados quedan sin
-              proveedor.
+              {t('deleteDescription', { name: deleting?.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <Label htmlFor="confirm">
-              Escribí <strong>{deleting?.name}</strong> para confirmar
+              {t('typeToConfirm', { name: deleting?.name ?? '' })}
             </Label>
             <Input
               id="confirm"
@@ -167,14 +169,14 @@ export function VendorsList({
                 setConfirmation('');
               }}
             >
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="destructive"
               disabled={pending || confirmation !== deleting?.name}
               onClick={onDelete}
             >
-              {pending ? '…' : 'Borrar'}
+              {pending ? '…' : tCommon('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,12 +1,45 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@source "../app/**/*.{ts,tsx}";
-@source "../src/**/*.{ts,tsx}";
+/* Tailwind only needs JSX-bearing files. Pure .ts (services, schemas, types,
+ * server actions) never carry className strings — excluding them speeds dev. */
+@source "../app/**/*.tsx";
+@source "../src/**/*.tsx";
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Design language: Mastercard
+ *
+ * Light: Warm Canvas Cream (#F3F0EE) — never pure white. Ink Black (#141413)
+ *        as primary CTA + headlines. Lifted Cream (#FCFBFA) for nested raised
+ *        surfaces. Signal Orange (#CF4500) reserved for destructive/legal
+ *        actions only (never marketing CTAs). Light Signal Orange (#F37338)
+ *        only for orbital decorative arcs and chart accents.
+ *
+ * Dark:  Ink Black (#141413) canvas with Canvas Cream (#F3F0EE) text — the
+ *        Mastercard footer treatment elevated to full surface. Cream pills
+ *        invert into primary CTA. Same restraint, same radius vocabulary.
+ *
+ * Border radius is trimodal: 6px (micro), 20px (CTA default), 40px
+ *        (hero/stadium), 999px (pill — nav, chips, inputs). The 8–16px
+ *        middle ground is intentionally absent.
+ *
+ * Body weight is 450. Display weight is 500. Headlines carry -2% tracking.
+ * Eyebrow labels at 14px / 700 / +4% tracking, uppercase, with accent dot.
+ *
+ * Substitution: MarkForMC is proprietary; we use Sofia Sans Variable from
+ * next/font/google — the open-source substitute Mastercard lists in its own
+ * fallback stack. Variable wght axis exposes 450 and 500 directly.
+ */
+
 @theme inline {
+  --font-sans:
+    var(--font-sofia-sans), system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', Menlo, Monaco, 'Cascadia Code', monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -23,80 +56,267 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-link: var(--link);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /*
+   * Mastercard literal radius scale. The doc commits to either small (≤6px),
+   * medium-large (20–40px), or full-pill (999+). The middle ground 8–16px is
+   * intentionally absent — that's why the UI feels either "precise utility"
+   * or "soft editorial" with no in-between.
+   */
+  --radius-sm: 0.375rem; /* 6px — micro chips, decorative inline elements */
+  --radius-md: 1.25rem; /* 20px — primary/secondary CTA, body buttons */
+  --radius-lg: 1.5rem; /* 24px — consent/destructive pill, cards, popovers */
+  --radius-xl: 2.5rem; /* 40px — hero stadium frames, dialogs, large containers */
+
+  /* Atmospheric shadow scale — wide spread, low opacity. No hard drops. */
+  --shadow-sm: 0 4px 24px 0 rgba(0, 0, 0, 0.04); /* L1: floating nav pill */
+  --shadow-md: 0 24px 48px 0 rgba(0, 0, 0, 0.08); /* L2: hero / elevated cards */
+  --shadow-lg: 0 70px 110px 0 rgba(0, 0, 0, 0.25); /* L3: rare dramatic feature tile */
+  --shadow-soft: 0 24px 48px 0 rgba(0, 0, 0, 0.08);
+  --shadow-focus: 0 0 0 2px var(--ring);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  /* Default radius — anchors `rounded-md` (Mastercard CTA default 20px) */
+  --radius: 1.25rem; /* 20px */
+
+  /* Surfaces — warm putty cream canvas, never pure white */
+  --background: #f3f0ee; /* Canvas Cream */
+  --foreground: #141413; /* Ink Black — warm near-black */
+
+  --card: #fcfbfa; /* Lifted Cream — paper laid on paper */
+  --card-foreground: #141413;
+  --popover: #ffffff; /* White reserved for floating overlays */
+  --popover-foreground: #141413;
+
+  /* Primary CTA: Ink Black pill with Canvas Cream text — never pure white text */
+  --primary: #141413;
+  --primary-foreground: #f3f0ee;
+
+  /* Secondary: Outlined white pill with Ink text */
+  --secondary: #ffffff;
+  --secondary-foreground: #141413;
+
+  /* Muted: Soft Bone — cool-gray subregion */
+  --muted: #f4f4f4;
+  --muted-foreground: #696969; /* Slate Gray */
+
+  /* Accent: Light Signal Orange — orbital arcs, chart accents, eyebrow dots only */
+  --accent: #f37338;
+  --accent-foreground: #141413;
+
+  /* Destructive: Signal Orange — Mastercard's consent/legal color, mapped to danger here */
+  --destructive: #cf4500;
+  --destructive-foreground: #ffffff;
+
+  /* Success: subdued green that respects the warm palette */
+  --success: #4f7a5b;
+
+  /* Hairlines: warm taupe-tinted border, low contrast on cream */
+  --border: #d1cdc7; /* Dust Taupe */
+  --input: #d1cdc7;
+
+  /* Focus ring: Ink Black — crisp and unmistakable */
+  --ring: #141413;
+
+  /* Inline link: deep dusty blue, saturated enough without being neon */
+  --link: #3860be;
+
+  /* Ghost watermark cream-on-cream for editorial section headlines */
+  --ghost: #e8e2da;
+
+  /* Charts: anchored on Ink + Signal Orange family. No saturated rainbow. */
+  --chart-1: #141413; /* Ink Black */
+  --chart-2: #cf4500; /* Signal Orange */
+  --chart-3: #f37338; /* Light Signal Orange */
+  --chart-4: #9a3a0a; /* Clay Brown */
+  --chart-5: #696969; /* Slate Gray */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  /*
+   * Dark = Ink Black canvas with Canvas Cream text. This is the Mastercard
+   * footer treatment elevated to full surface. The doc doesn't define dark
+   * directly — we extend its vocabulary: ink replaces cream, cream replaces ink.
+   */
+  --background: #141413;
+  --foreground: #f3f0ee;
+
+  --card: #1f1e1d; /* Lifted Ink — one step up from canvas */
+  --card-foreground: #f3f0ee;
+  --popover: #1f1e1d;
+  --popover-foreground: #f3f0ee;
+
+  /* On dark, Cream becomes the primary CTA pill with Ink text */
+  --primary: #f3f0ee;
+  --primary-foreground: #141413;
+
+  /* Secondary: outlined ink pill with cream text */
+  --secondary: #1f1e1d;
+  --secondary-foreground: #f3f0ee;
+
+  --muted: #262627; /* Charcoal */
+  --muted-foreground: rgba(243, 240, 238, 0.7);
+
+  --accent: #f37338;
+  --accent-foreground: #141413;
+
+  /* Signal Orange holds on dark — high enough chroma */
+  --destructive: #cf4500;
+  --destructive-foreground: #ffffff;
+
+  --success: #a8c5b0;
+
+  /* Translucent cream borders — ghostly containment on ink */
+  --border: rgba(243, 240, 238, 0.15);
+  --input: rgba(243, 240, 238, 0.15);
+
+  --ring: #f3f0ee;
+
+  --link: #8aa9f0;
+
+  --ghost: #1f1e1d;
+
+  --chart-1: #f3f0ee;
+  --chart-2: #f37338;
+  --chart-3: #cf4500;
+  --chart-4: #d1cdc7;
+  --chart-5: rgba(243, 240, 238, 0.6);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    /* Body weight 450 — Mastercard's signature half-step weight, softer than 500. */
+    font-weight: 450;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  /*
+   * Headlines: weight 500 with -2% tracking. Line-height ratio drops with size:
+   * H1 = 1:1, H2 = 1.22, H3 = 1.2. Tight display, comfortable reading.
+   */
+  h1 {
+    font-family: var(--font-sans);
+    font-size: 64px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -1.28px; /* -2% */
+  }
+
+  h2 {
+    font-family: var(--font-sans);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.72px; /* -2% */
+  }
+
+  h3 {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.48px; /* -2% */
+  }
+
+  h4 {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  /* Tabular numerals for currency/amount cells */
+  .tabular-nums {
+    font-feature-settings: 'tnum' on;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /*
+   * Eyebrow label — Mastercard's signature section-category signal.
+   * 14px / 700 / +4% tracking / uppercase, paired with a small accent dot.
+   * Apply to a <span>: <span className="eyebrow"><span className="eyebrow-dot" /> SERVICES</span>
+   */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.56px; /* +4% */
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .eyebrow-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: var(--accent); /* Light Signal Orange */
+  }
+
+  /*
+   * Ghost watermark — cream-on-cream display text layered behind portraits.
+   * Use in editorial sections (auth, error, dashboard hero) only.
+   */
+  .ghost-watermark {
+    color: var(--ghost);
+    font-size: clamp(48px, 8vw, 128px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -2.56px; /* -2% */
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /*
+   * Hero stadium — full-bleed media frame with the iconic 40px radius.
+   * Sits directly on canvas with no shadow.
+   */
+  .hero-stadium {
+    border-radius: 2.5rem; /* 40px */
+    overflow: hidden;
+    background-color: #000000;
+  }
+
+  /*
+   * Hero gradient — rare dramatic surface (auth hero, marketing).
+   * Uses the dark-ink + warm undertone palette.
+   */
+  .hero-gradient {
+    background:
+      radial-gradient(circle at 20% 0%, #2b2b2b 0%, transparent 60%),
+      radial-gradient(circle at 80% 100%, #0a0a0a 0%, transparent 55%),
+      linear-gradient(180deg, #141413 0%, #0a0a0a 100%);
   }
 }

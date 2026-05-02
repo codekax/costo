@@ -1,9 +1,7 @@
 'use client';
 
-import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -13,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CreateVendorSchema } from '@/lib/schemas/vendor';
 import { createVendor } from '@/actions/vendors/create-vendor';
 import { updateVendor } from '@/actions/vendors/update-vendor';
+import { useServerAction } from '@/hooks/use-server-action';
 import type { Vendor } from '@/types/domain';
 
 type Values = z.input<typeof CreateVendorSchema>;
@@ -26,8 +25,10 @@ export function VendorForm({
   vendor?: Vendor;
   onDone?: () => void;
 }) {
-  const tErrors = useTranslations('errors');
-  const [pending, startTransition] = useTransition();
+  const t = useTranslations('toasts');
+  const tCommon = useTranslations('common');
+  const tVendors = useTranslations('vendors');
+  const isEdit = Boolean(vendor);
 
   const form = useForm<Values>({
     resolver: zodResolver(CreateVendorSchema),
@@ -39,55 +40,52 @@ export function VendorForm({
     },
   });
 
-  function onSubmit(values: Values) {
-    startTransition(async () => {
+  const submit = useServerAction<Values, unknown>(
+    (values) => {
       const cleaned = {
         ...values,
         contact: values.contact?.trim() || undefined,
         notes: values.notes?.trim() || undefined,
       };
-      const result = vendor
-        ? await updateVendor({ id: vendor.id, ...cleaned })
-        : await createVendor(cleaned);
-
-      if (!result.ok) {
-        toast.error(tErrors(result.error));
-        return;
-      }
-      toast.success(vendor ? 'Proveedor actualizado' : 'Proveedor creado');
-      onDone?.();
-    });
-  }
+      return isEdit
+        ? updateVendor({ id: vendor!.id, ...cleaned })
+        : createVendor(cleaned);
+    },
+    {
+      successMessage: t(isEdit ? 'vendorUpdated' : 'vendorCreated'),
+      onSuccess: onDone,
+    },
+  );
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(submit.run)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Nombre</Label>
-        <Input id="name" placeholder="Corralón Norte" {...form.register('name')} />
+        <Label htmlFor="name">{tVendors('name')}</Label>
+        <Input id="name" placeholder={tVendors('namePlaceholder')} {...form.register('name')} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="contact">Contacto (opcional)</Label>
+        <Label htmlFor="contact">{tVendors('contactOptional')}</Label>
         <Input
           id="contact"
-          placeholder="Tel: 11 1234-5678"
+          placeholder={tVendors('contactPlaceholder')}
           {...form.register('contact')}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="notes">Notas (opcional)</Label>
+        <Label htmlFor="notes">{tVendors('notesOptional')}</Label>
         <Textarea id="notes" rows={2} {...form.register('notes')} />
       </div>
 
       <div className="flex justify-end gap-2 pt-2">
         {onDone && (
           <Button type="button" variant="ghost" onClick={onDone}>
-            Cancelar
+            {tCommon('cancel')}
           </Button>
         )}
-        <Button type="submit" disabled={pending}>
-          {pending ? '…' : vendor ? 'Guardar cambios' : 'Crear'}
+        <Button type="submit" disabled={submit.pending}>
+          {submit.pending ? '…' : isEdit ? tCommon('save') : tCommon('create')}
         </Button>
       </div>
     </form>

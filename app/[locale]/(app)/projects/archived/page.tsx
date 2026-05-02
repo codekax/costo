@@ -1,11 +1,13 @@
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Archive } from 'lucide-react';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjects } from '@/lib/db/queries/projects';
 import { formatCurrency } from '@/utils/format';
 
@@ -16,38 +18,33 @@ export default async function ArchivedProjectsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('projects');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
-  const projects = await getProjects(supabase, ws.active.id, { archived: true });
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const projects = await getProjects(supabase, workspace.id, { archived: true });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Proyectos archivados</h1>
-          <p className="text-sm text-muted-foreground">
-            {projects.length === 0
-              ? 'Sin proyectos archivados.'
-              : `${projects.length} proyecto${projects.length === 1 ? '' : 's'} archivado${projects.length === 1 ? '' : 's'}`}
-          </p>
-        </div>
-        <Button asChild variant="ghost">
-          <Link href="/projects">Volver a activos</Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={t('archivedTitle')}
+        description={
+          projects.length === 0
+            ? t('noArchived')
+            : t('summaryArchived', { count: projects.length })
+        }
+        actions={
+          <Button asChild variant="ghost">
+            <Link href="/projects">{t('backToActive')}</Link>
+          </Button>
+        }
+      />
 
       {projects.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-            <Archive className="size-10 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              Los proyectos que archives van a aparecer acá.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Archive}
+          title={t('archivedEmptyTitle')}
+          description={t('archivedEmptyDescription')}
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((p) => (
@@ -55,25 +52,25 @@ export default async function ArchivedProjectsPage({
               <Card className="h-full opacity-75 transition-opacity hover:opacity-100">
                 <CardContent className="space-y-3 pt-6">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold">{p.name}</h3>
-                    <Badge variant="secondary">Archivado</Badge>
+                    <h3 className="truncate text-base [font-weight:500]">{p.name}</h3>
+                    <Badge variant="secondary">{t('archivedSingle')}</Badge>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Total ARS</p>
-                      <p className="font-medium tabular-nums">
+                  <div className="space-y-2">
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">{t('totalArs')}</p>
+                      <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
                         {formatCurrency(p.total_ars, 'ARS')}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Total USD</p>
-                      <p className="font-medium tabular-nums">
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">{t('totalUsd')}</p>
+                      <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
                         {formatCurrency(p.total_usd, 'USD')}
                       </p>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {p.expense_count} gasto{p.expense_count === 1 ? '' : 's'}
+                    {t('expensesCount', { count: p.expense_count })}
                   </p>
                 </CardContent>
               </Card>

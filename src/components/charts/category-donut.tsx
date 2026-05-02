@@ -1,6 +1,7 @@
 'use client';
 
 import { Pie, PieChart, Cell } from 'recharts';
+import { useTranslations } from 'next-intl';
 import {
   ChartContainer,
   ChartTooltip,
@@ -17,6 +18,7 @@ export function CategoryDonut({
   data: CategoryBreakdown[];
   currency: 'ARS' | 'USD';
 }) {
+  const t = useTranslations('dashboard');
   const filtered = data
     .map((c) => ({
       id: c.id,
@@ -31,7 +33,7 @@ export function CategoryDonut({
   if (filtered.length === 0) {
     return (
       <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
-        Sin gastos en {currency} en los últimos 12 meses.
+        {t('donutEmpty', { currency })}
       </div>
     );
   }
@@ -56,7 +58,7 @@ export function CategoryDonut({
                     style={{ backgroundColor: item.payload.color }}
                   />
                   <span>{item.payload.name}</span>
-                  <span className="ml-auto font-mono font-semibold">
+                  <span className="ml-auto tabular-nums [font-weight:500]">
                     {formatCurrency(Number(value), currency)}
                   </span>
                   <span className="ml-1 text-xs text-muted-foreground">

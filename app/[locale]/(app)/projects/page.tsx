@@ -1,12 +1,14 @@
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Plus, Folder, Archive } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjects } from '@/lib/db/queries/projects';
 import { formatCurrency } from '@/utils/format';
 
@@ -17,55 +19,49 @@ export default async function ProjectsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('projects');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
-  const projects = await getProjects(supabase, ws.active.id, { archived: false });
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const projects = await getProjects(supabase, workspace.id, { archived: false });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Proyectos</h1>
-          <p className="text-sm text-muted-foreground">
-            {projects.length === 0
-              ? 'Sin proyectos todavía'
-              : `${projects.length} proyecto${projects.length === 1 ? '' : 's'} activo${projects.length === 1 ? '' : 's'}`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/projects/archived">
-              <Archive className="mr-1 size-4" /> Archivados
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="/projects/new">
-              <Plus className="mr-1 size-4" /> Nuevo proyecto
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {projects.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-            <Folder className="size-10 text-muted-foreground" />
-            <div>
-              <p className="font-medium">Empezá creando tu primer proyecto</p>
-              <p className="text-sm text-muted-foreground">
-                Por ejemplo: &quot;Expansión casa&quot; o &quot;Cocina nueva&quot;.
-              </p>
-            </div>
-            <Button asChild>
-              <Link href="/projects/new">
-                <Plus className="mr-1 size-4" /> Crear proyecto
+      <PageHeader
+        title={t('title')}
+        description={
+          projects.length === 0
+            ? t('noProjectsYet')
+            : t('summaryActive', { count: projects.length })
+        }
+        actions={
+          <>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/projects/archived">
+                <Archive className="mr-1 size-4" /> {t('archived')}
               </Link>
             </Button>
-          </CardContent>
-        </Card>
+            <Button asChild>
+              <Link href="/projects/new">
+                <Plus className="mr-1 size-4" /> {t('newProject')}
+              </Link>
+            </Button>
+          </>
+        }
+      />
+
+      {projects.length === 0 ? (
+        <EmptyState
+          icon={Folder}
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
+          action={
+            <Button asChild>
+              <Link href="/projects/new">
+                <Plus className="mr-1 size-4" /> {t('createProject')}
+              </Link>
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((p) => {
@@ -79,7 +75,7 @@ export default async function ProjectsPage({
                 : null;
             return (
               <Link key={p.id} href={`/projects/${p.id}`}>
-                <Card className="h-full transition-colors hover:bg-accent/30">
+                <Card className="h-full transition-colors hover:bg-foreground/5">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base">{p.name}</CardTitle>
@@ -89,28 +85,28 @@ export default async function ProjectsPage({
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Total ARS</p>
-                        <p className="text-lg font-semibold tabular-nums">
+                    <div className="space-y-3">
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t('totalArs')}</p>
+                        <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
                           {formatCurrency(p.total_ars, 'ARS')}
                         </p>
                         {progressArs !== null && (
-                          <Progress value={progressArs} className="mt-1 h-1.5" />
+                          <Progress value={progressArs} className="mt-1 h-1" />
                         )}
                       </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Total USD</p>
-                        <p className="text-lg font-semibold tabular-nums">
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t('totalUsd')}</p>
+                        <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
                           {formatCurrency(p.total_usd, 'USD')}
                         </p>
                         {progressUsd !== null && (
-                          <Progress value={progressUsd} className="mt-1 h-1.5" />
+                          <Progress value={progressUsd} className="mt-1 h-1" />
                         )}
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {p.expense_count} gasto{p.expense_count === 1 ? '' : 's'}
+                      {t('expensesCount', { count: p.expense_count })}
                     </p>
                   </CardContent>
                 </Card>

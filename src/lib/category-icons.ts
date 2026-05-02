@@ -56,7 +56,7 @@ export const CATEGORY_COLORS = [
   '#0ea5e9',
   '#84cc16',
   '#f59e0b',
-];
+] as const satisfies readonly [string, ...string[]];
 
 export function getCategoryIcon(name: string): LucideIcon {
   return CATEGORY_ICONS[name] ?? Folder;

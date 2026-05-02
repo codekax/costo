@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { ProjectEditForm } from '@/components/forms/project-edit-form';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjectById } from '@/lib/db/queries/projects';
+import { getProjectTypes } from '@/lib/db/queries/project-types';
 
 export default async function EditProjectPage({
   params,
@@ -13,26 +15,24 @@ export default async function EditProjectPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('projects');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
-  const project = await getProjectById(supabase, id);
-  if (!project || project.workspace_id !== ws.active.id) notFound();
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const [project, existingTypes] = await Promise.all([
+    getProjectById(supabase, id),
+    getProjectTypes(supabase, workspace.id),
+  ]);
+  if (!project || project.workspace_id !== workspace.id) notFound();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Editar proyecto</h1>
-        <p className="text-sm text-muted-foreground">{project.name}</p>
-      </div>
+      <PageHeader title={t('editProject')} description={project.name} />
       <Card>
         <CardHeader>
-          <CardTitle>Datos del proyecto</CardTitle>
+          <CardTitle>{t('formCardTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProjectEditForm project={project} />
+          <ProjectEditForm project={project} existingTypes={existingTypes} />
         </CardContent>
       </Card>
     </div>

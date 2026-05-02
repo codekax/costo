@@ -1,83 +1,60 @@
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Plus, Receipt } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
+import { ExpenseRow } from '@/components/domain/expense-row';
+import { FilterBar } from '@/components/domain/filter-bar';
+import { SearchInput } from '@/components/domain/search-input';
+import { ExportCsvButton } from '@/components/domain/export-csv-button';
+
+import { requireWorkspaceContext } from '@/lib/workspace-context';
+import { parseExpenseFiltersFromObject } from '@/lib/expense-filters';
 import { getExpenses, getWorkspaceTotals } from '@/lib/db/queries/expenses';
 import { getProjects } from '@/lib/db/queries/projects';
 import { getCategories } from '@/lib/db/queries/categories';
 import { getVendors } from '@/lib/db/queries/vendors';
-import { ExpenseRow } from '@/components/domain/expense-row';
-import { ExpensesScopeTabs } from './expenses-scope-tabs';
-import { FilterBar } from '@/components/domain/filter-bar';
-import { SearchInput } from '@/components/domain/search-input';
 import { formatCurrency } from '@/utils/format';
-import type { ExpenseFilters } from '@/lib/schemas/expense';
+import { EXPENSE_LIST_DEFAULT_LIMIT } from '@/constants/expenses';
 
-type Scope = 'all' | 'general' | string;
+import { ExpensesScopeTabs } from './expenses-scope-tabs';
 
-function parseScope(value: string | undefined): Scope {
-  if (!value) return 'all';
-  if (value === 'general') return 'general';
-  if (value === 'all') return 'all';
-  return value;
-}
-
-const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-function pickDate(value: string | undefined): string | undefined {
-  return value && dateRegex.test(value) ? value : undefined;
-}
-function pickCurrency(value: string | undefined): 'ARS' | 'USD' | undefined {
-  return value === 'ARS' || value === 'USD' ? value : undefined;
-}
+type SearchParams = {
+  scope?: string;
+  category?: string;
+  vendor?: string;
+  currency?: string;
+  from?: string;
+  to?: string;
+  q?: string;
+};
 
 export default async function ExpensesPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{
-    scope?: string;
-    category?: string;
-    vendor?: string;
-    currency?: string;
-    from?: string;
-    to?: string;
-    q?: string;
-  }>;
+  searchParams: Promise<SearchParams>;
 }) {
-  const { locale } = await params;
-  const sp = await searchParams;
+  const [{ locale }, sp] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
+  const t = await getTranslations('expenses');
+  const tScope = await getTranslations('scopeTabs');
 
-  const scope = parseScope(sp.scope);
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
-
-  const baseFilters: ExpenseFilters = {
-    ...(scope === 'general' ? { projectId: null } : {}),
-    ...(scope !== 'all' && scope !== 'general' ? { projectId: scope } : {}),
-    ...(sp.category ? { categoryId: sp.category } : {}),
-    ...(sp.vendor ? { vendorId: sp.vendor } : {}),
-    ...(pickCurrency(sp.currency) ? { currency: pickCurrency(sp.currency)! } : {}),
-    ...(pickDate(sp.from) ? { dateFrom: pickDate(sp.from)! } : {}),
-    ...(pickDate(sp.to) ? { dateTo: pickDate(sp.to)! } : {}),
-    ...(sp.q ? { search: sp.q } : {}),
-  };
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const { scope, filters, hasFilters } = parseExpenseFiltersFromObject(sp);
 
   const [expenses, totals, projects, categories, vendors] = await Promise.all([
-    getExpenses(supabase, ws.active.id, baseFilters, 200),
-    getWorkspaceTotals(supabase, ws.active.id),
-    getProjects(supabase, ws.active.id, { archived: false }),
-    getCategories(supabase, ws.active.id),
-    getVendors(supabase, ws.active.id),
+    getExpenses(supabase, workspace.id, filters, EXPENSE_LIST_DEFAULT_LIMIT * 2),
+    getWorkspaceTotals(supabase, workspace.id),
+    getProjects(supabase, workspace.id, { archived: false }),
+    getCategories(supabase, workspace.id),
+    getVendors(supabase, workspace.id),
   ]);
 
-  const scopedAccumulator = expenses.reduce(
+  const scopedTotals = expenses.reduce(
     (acc, e) => {
       acc.ars += Number(e.amount_ars);
       acc.usd += Number(e.amount_usd);
@@ -86,50 +63,52 @@ export default async function ExpensesPage({
     { ars: 0, usd: 0 },
   );
 
-  const filtersActive =
-    !!sp.category ||
-    !!sp.vendor ||
-    !!pickCurrency(sp.currency) ||
-    !!pickDate(sp.from) ||
-    !!pickDate(sp.to) ||
-    !!sp.q;
+  const scoped = scope.kind !== 'all' || hasFilters;
+  const label =
+    scope.kind === 'all'
+      ? tScope('all')
+      : scope.kind === 'general'
+        ? tScope('general')
+        : (projects.find((p) => p.id === scope.projectId)?.name ?? '');
 
-  const showScopedHeader = scope !== 'all' || filtersActive;
+  const description = scoped
+    ? scope.kind !== 'all'
+      ? t('scopedSummary', {
+          label,
+          count: expenses.length,
+          ars: formatCurrency(scopedTotals.ars, 'ARS'),
+          usd: formatCurrency(scopedTotals.usd, 'USD'),
+        })
+      : t('summary', {
+          count: expenses.length,
+          ars: formatCurrency(scopedTotals.ars, 'ARS'),
+          usd: formatCurrency(scopedTotals.usd, 'USD'),
+        })
+    : t('summary', {
+        count: totals.count,
+        ars: formatCurrency(totals.ars, 'ARS'),
+        usd: formatCurrency(totals.usd, 'USD'),
+      });
 
-  const scopeLabel =
-    scope === 'all'
-      ? 'Todos'
-      : scope === 'general'
-        ? 'Generales'
-        : (projects.find((p) => p.id === scope)?.name ?? 'Proyecto');
+  const newExpenseHref =
+    scope.kind === 'project' ? `/expenses/new?project=${scope.projectId}` : '/expenses/new';
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Gastos</h1>
-          <p className="text-sm text-muted-foreground">
-            {showScopedHeader ? (
-              <>
-                {scope !== 'all' ? `${scopeLabel} · ` : ''}
-                {expenses.length} gasto{expenses.length === 1 ? '' : 's'} ·{' '}
-                {formatCurrency(scopedAccumulator.ars, 'ARS')} ·{' '}
-                {formatCurrency(scopedAccumulator.usd, 'USD')}
-              </>
-            ) : (
-              <>
-                {totals.count} gasto{totals.count === 1 ? '' : 's'} ·{' '}
-                {formatCurrency(totals.ars, 'ARS')} · {formatCurrency(totals.usd, 'USD')}
-              </>
-            )}
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/expenses/new">
-            <Plus className="mr-1 size-4" /> Nuevo gasto
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={t('title')}
+        description={description}
+        actions={
+          <>
+            <ExportCsvButton workspaceId={workspace.id} />
+            <Button asChild>
+              <Link href="/expenses/new">
+                <Plus className="mr-1 size-4" /> {t('newExpense')}
+              </Link>
+            </Button>
+          </>
+        }
+      />
 
       <ExpensesScopeTabs
         scope={scope}
@@ -145,38 +124,28 @@ export default async function ExpensesPage({
       </div>
 
       {expenses.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-            <Receipt className="size-10 text-muted-foreground" />
-            <div>
-              <p className="font-medium">
-                {filtersActive
-                  ? 'Ningún gasto coincide con los filtros'
-                  : scope === 'all'
-                    ? 'Sin gastos todavía'
-                    : `Sin gastos en ${scopeLabel}`}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {filtersActive
-                  ? 'Probá ajustar o limpiar los filtros.'
-                  : 'Cargá uno para empezar.'}
-              </p>
-            </div>
-            {!filtersActive && (
+        <EmptyState
+          icon={Receipt}
+          title={
+            hasFilters
+              ? t('emptyFilteredTitle')
+              : scope.kind === 'all'
+                ? t('emptyTitle')
+                : t('emptyForScope', { label })
+          }
+          description={
+            hasFilters ? t('emptyFilteredDescription') : t('emptyDescription')
+          }
+          action={
+            !hasFilters ? (
               <Button asChild>
-                <Link
-                  href={
-                    scope !== 'all' && scope !== 'general'
-                      ? `/expenses/new?project=${scope}`
-                      : '/expenses/new'
-                  }
-                >
-                  <Plus className="mr-1 size-4" /> Cargar gasto
+                <Link href={newExpenseHref}>
+                  <Plus className="mr-1 size-4" /> {t('loadExpense')}
                 </Link>
               </Button>
-            )}
-          </CardContent>
-        </Card>
+            ) : null
+          }
+        />
       ) : (
         <div className="space-y-2">
           {expenses.map((e) => (

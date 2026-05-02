@@ -1,7 +1,10 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { ProjectForm } from '@/components/forms/project-form';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
+import { getProjectTypes } from '@/lib/db/queries/project-types';
 
 export default async function NewProjectPage({
   params,
@@ -10,23 +13,22 @@ export default async function NewProjectPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
+  const t = await getTranslations('projects');
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const existingTypes = await getProjectTypes(supabase, workspace.id);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Nuevo proyecto</h1>
-        <p className="text-sm text-muted-foreground">
-          Workspace activo: {ws.active.name}
-        </p>
-      </div>
+      <PageHeader
+        title={t('newProject')}
+        description={t('newPageDescription', { workspace: workspace.name })}
+      />
       <Card>
         <CardHeader>
-          <CardTitle>Datos del proyecto</CardTitle>
+          <CardTitle>{t('formCardTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProjectForm workspaceId={ws.active.id} />
+          <ProjectForm workspaceId={workspace.id} existingTypes={existingTypes} />
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Plus, Receipt } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,18 +10,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
-import { getDashboardData } from '@/lib/db/queries/dashboard';
-import { getProjects } from '@/lib/db/queries/projects';
-import { getWorkspaceTotals } from '@/lib/db/queries/expenses';
 import { CategoryDonut } from '@/components/charts/category-donut';
 import { MonthlyEvolution } from '@/components/charts/monthly-evolution';
 import { TopVendors } from '@/components/charts/top-vendors';
 import { ProjectProgressList } from '@/components/charts/project-progress';
 import { ExpenseRow } from '@/components/domain/expense-row';
+
+import { requireWorkspaceContext } from '@/lib/workspace-context';
+import { getDashboardData } from '@/lib/db/queries/dashboard';
+import { getProjects } from '@/lib/db/queries/projects';
+import { getWorkspaceTotals } from '@/lib/db/queries/expenses';
 import { formatCurrency } from '@/utils/format';
+
+/**
+ * Charts use recharts (~60KB). They're declared as `'use client'` components,
+ * which Next.js already extracts into separate client chunks during the build.
+ * Combined with `optimizePackageImports: ['recharts']` in next.config.ts,
+ * this gives us bundle splitting without the `dynamic()` ergonomic cost.
+ *
+ * (Tried `dynamic({ ssr: false })` — Next 15 forbids it inside Server Components.
+ * Wrapping each chart in a client wrapper just to call `dynamic()` is more
+ * boilerplate than it's worth at this scale.)
+ */
 
 export default async function DashboardPage({
   params,
@@ -29,62 +43,57 @@ export default async function DashboardPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('dashboard');
+  const tExp = await getTranslations('expenses');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
+  const { workspace, supabase } = await requireWorkspaceContext();
   const [data, allTotals, projects] = await Promise.all([
-    getDashboardData(supabase, ws.active.id),
-    getWorkspaceTotals(supabase, ws.active.id),
-    getProjects(supabase, ws.active.id, { archived: false }),
+    getDashboardData(supabase, workspace.id),
+    getWorkspaceTotals(supabase, workspace.id),
+    getProjects(supabase, workspace.id, { archived: false }),
   ]);
 
   const isEmpty = allTotals.count === 0;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Inicio</h1>
-          <p className="text-sm text-muted-foreground">{ws.active.name}</p>
-        </div>
-        <Button asChild>
-          <Link href="/expenses/new">
-            <Plus className="mr-1 size-4" /> Nuevo gasto
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={t('title')}
+        description={workspace.name}
+        actions={
+          <Button asChild>
+            <Link href="/expenses/new">
+              <Plus className="mr-1 size-4" /> {tExp('newExpense')}
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <TotalCard label="Total ARS" amount={allTotals.ars} currency="ARS" />
-        <TotalCard label="Total USD" amount={allTotals.usd} currency="USD" />
+        <TotalCard label={t('totalArs')} amount={allTotals.ars} currency="ARS" />
+        <TotalCard label={t('totalUsd')} amount={allTotals.usd} currency="USD" />
       </div>
 
       {isEmpty ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
-            <Receipt className="size-10 text-muted-foreground" />
-            <div className="space-y-1">
-              <p className="font-medium">Empezá a trackear tus costos</p>
-              <p className="text-sm text-muted-foreground">
-                Cargá tu primer gasto y vas a verlo reflejado acá inmediatamente.
-              </p>
-            </div>
+        <EmptyState
+          icon={Receipt}
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
+          action={
             <Button asChild>
               <Link href="/expenses/new">
-                <Plus className="mr-1 size-4" /> Cargar primer gasto
+                <Plus className="mr-1 size-4" /> {t('loadFirst')}
               </Link>
             </Button>
-          </CardContent>
-        </Card>
+          }
+        />
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Distribución por categoría</CardTitle>
-                <CardDescription>Últimos 12 meses</CardDescription>
+                <CardTitle className="text-base">{t('byCategory')}</CardTitle>
+                <CardDescription>{t('last12Months')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="ars">
@@ -104,8 +113,8 @@ export default async function DashboardPage({
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Evolución mensual</CardTitle>
-                <CardDescription>ARS y USD acumulados por mes</CardDescription>
+                <CardTitle className="text-base">{t('monthlyTitle')}</CardTitle>
+                <CardDescription>{t('monthlyDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <MonthlyEvolution data={data.monthly} />
@@ -116,7 +125,7 @@ export default async function DashboardPage({
           <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Proyectos activos</CardTitle>
+                <CardTitle className="text-base">{t('activeProjects')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ProjectProgressList projects={projects} />
@@ -125,8 +134,8 @@ export default async function DashboardPage({
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Top proveedores</CardTitle>
-                <CardDescription>Por monto total</CardDescription>
+                <CardTitle className="text-base">{t('topVendors')}</CardTitle>
+                <CardDescription>{t('topVendorsDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <TopVendors data={data.topVendors} />
@@ -137,11 +146,11 @@ export default async function DashboardPage({
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-base">Últimos gastos</CardTitle>
-                <CardDescription>Los 10 más recientes</CardDescription>
+                <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
+                <CardDescription>{t('recentExpensesDescription')}</CardDescription>
               </div>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/expenses">Ver todos</Link>
+                <Link href="/expenses">{t('viewAll')}</Link>
               </Button>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -171,7 +180,9 @@ function TotalCard({
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold tabular-nums">{formatCurrency(amount, currency)}</p>
+        <p className="text-3xl tabular-nums tracking-[-0.03em] [font-weight:540]">
+          {formatCurrency(amount, currency)}
+        </p>
       </CardContent>
     </Card>
   );

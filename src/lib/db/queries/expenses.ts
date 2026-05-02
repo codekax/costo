@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cache } from 'react';
 import type { createServerClient } from '@/lib/supabase/server';
 import type { ExpenseWithRelations } from '@/types/domain';
 import type { ExpenseFilters } from '@/lib/schemas/expense';
@@ -54,7 +55,7 @@ export async function getExpenses(
   return (data ?? []) as unknown as ExpenseWithRelations[];
 }
 
-export async function getExpenseById(
+export const getExpenseById = cache(async function getExpenseById(
   supabase: Db,
   id: string,
 ): Promise<ExpenseWithRelations | null> {
@@ -71,9 +72,15 @@ export async function getExpenseById(
 
   if (error) throw error;
   return (data as unknown as ExpenseWithRelations) ?? null;
-}
+});
 
-export async function getWorkspaceTotals(
+/**
+ * Workspace totals are read by the dashboard AND the expenses page header.
+ * Wrapping in `cache()` dedupes that pair within a single request — both
+ * call sites use the same `supabase` instance from `requireWorkspaceContext`,
+ * so the Object.is check on the first arg hits.
+ */
+export const getWorkspaceTotals = cache(async function getWorkspaceTotals(
   supabase: Db,
   workspaceId: string,
 ): Promise<{ ars: number; usd: number; count: number }> {
@@ -91,4 +98,4 @@ export async function getWorkspaceTotals(
     usd += Number(row.amount_usd);
   }
   return { ars, usd, count: data?.length ?? 0 };
-}
+});

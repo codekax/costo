@@ -3,6 +3,7 @@
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronsUpDown, Check, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ export function WorkspaceSwitcher({
   active: WorkspaceWithRole;
   workspaces: WorkspaceWithRole[];
 }) {
+  const t = useTranslations('workspaceSwitcher');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -37,19 +39,18 @@ export function WorkspaceSwitcher({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          className="w-full justify-between"
-          aria-label="Cambiar workspace"
+          variant="secondary"
+          size="sm"
+          className="w-full justify-between rounded-full px-4"
+          aria-label={t('ariaLabel')}
           disabled={pending}
         >
           <span className="truncate">{active.name}</span>
           <ChevronsUpDown className="size-4 opacity-60" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
-        <DropdownMenuLabel className="text-xs uppercase tracking-wide text-muted-foreground">
-          Workspaces
-        </DropdownMenuLabel>
+      <DropdownMenuContent align="start" className="w-60">
+        <DropdownMenuLabel>{t('groupLabel')}</DropdownMenuLabel>
         {workspaces.map((ws) => (
           <DropdownMenuItem
             key={ws.id}
@@ -57,9 +58,9 @@ export function WorkspaceSwitcher({
             className="flex items-center justify-between"
           >
             <div className="flex flex-col">
-              <span className="text-sm">{ws.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {ws.kind === 'personal' ? 'personal' : 'compartido'} · {ws.role}
+              <span className="text-sm [font-weight:500]">{ws.name}</span>
+              <span className="text-xs text-muted-foreground [font-weight:450]">
+                {ws.kind === 'personal' ? t('personal') : t('shared')} · {ws.role}
               </span>
             </div>
             {ws.id === active.id ? <Check className="size-4" /> : null}
@@ -68,7 +69,7 @@ export function WorkspaceSwitcher({
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => router.push('/settings/workspaces')}>
           <Plus className="mr-2 size-4" />
-          Nuevo workspace
+          {t('newWorkspace')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

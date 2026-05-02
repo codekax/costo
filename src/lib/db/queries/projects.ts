@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cache } from 'react';
 import type { createServerClient } from '@/lib/supabase/server';
 import type { Project } from '@/types/domain';
 
@@ -57,7 +58,7 @@ export async function getProjects(
   });
 }
 
-export async function getProjectById(
+export const getProjectById = cache(async function getProjectById(
   supabase: Db,
   id: string,
 ): Promise<Project | null> {
@@ -69,9 +70,14 @@ export async function getProjectById(
 
   if (error) throw error;
   return data;
-}
+});
 
-export async function getProjectTotals(
+/**
+ * Cached so a project page can call this from multiple components (header
+ * stats + chart) without re-running the SUM. Same supabase reference per
+ * request → cache hit.
+ */
+export const getProjectTotals = cache(async function getProjectTotals(
   supabase: Db,
   projectId: string,
 ): Promise<{ ars: number; usd: number }> {
@@ -89,4 +95,4 @@ export async function getProjectTotals(
     usd += Number(row.amount_usd);
   }
   return { ars, usd };
-}
+});

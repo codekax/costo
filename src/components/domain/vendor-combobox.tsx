@@ -36,6 +36,7 @@ export function VendorCombobox({
   const [search, setSearch] = useState('');
   const [pending, startTransition] = useTransition();
   const tErrors = useTranslations('errors');
+  const tVendors = useTranslations('vendors');
 
   const selected = options.find((v) => v.id === value);
   const lower = search.trim().toLowerCase();
@@ -56,7 +57,7 @@ export function VendorCombobox({
       onChange(created.id);
       setSearch('');
       setOpen(false);
-      toast.success(`"${created.name}" agregado`);
+      toast.success(tVendors('vendorAdded', { name: created.name }));
     });
   }
 
@@ -67,22 +68,22 @@ export function VendorCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between font-normal"
+          className="w-full justify-between [font-weight:450]"
         >
-          <span className="truncate">{selected ? selected.name : 'Sin proveedor'}</span>
+          <span className="truncate">{selected ? selected.name : tVendors('noVendor')}</span>
           <ChevronsUpDown className="size-4 opacity-60" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Buscar o crear…"
+            placeholder={tVendors('searchOrCreate')}
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             {filtered.length === 0 && !lower && (
-              <CommandEmpty>Empezá a tipear para buscar.</CommandEmpty>
+              <CommandEmpty>{tVendors('startTyping')}</CommandEmpty>
             )}
             <CommandGroup>
               <CommandItem
@@ -92,7 +93,7 @@ export function VendorCombobox({
                   setOpen(false);
                 }}
               >
-                <span className="text-muted-foreground">Sin proveedor</span>
+                <span className="text-muted-foreground">{tVendors('noVendor')}</span>
                 {value === null && <Check className="ml-auto size-4" />}
               </CommandItem>
               {filtered.map((v) => (
@@ -116,7 +117,7 @@ export function VendorCombobox({
                   disabled={pending}
                 >
                   <Plus className="mr-2 size-4" />
-                  Crear &ldquo;{search.trim()}&rdquo;
+                  {tVendors('createNamed', { name: search.trim() })}
                 </CommandItem>
               )}
             </CommandGroup>

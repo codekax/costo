@@ -1,8 +1,10 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createServerClient } from '@/lib/supabase/server';
-import { getActiveWorkspace } from '@/lib/active-workspace';
+import { PageHeader } from '@/components/ui/page-header';
+import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getCategories } from '@/lib/db/queries/categories';
+
 import { CategoriesList } from './categories-list';
 
 export default async function CategoriesPage({
@@ -12,27 +14,23 @@ export default async function CategoriesPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('categories');
 
-  const ws = await getActiveWorkspace();
-  if (!ws) return null;
-
-  const supabase = await createServerClient();
-  const categories = await getCategories(supabase, ws.active.id);
+  const { workspace, supabase } = await requireWorkspaceContext();
+  const categories = await getCategories(supabase, workspace.id);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Categorías</h1>
-        <p className="text-sm text-muted-foreground">
-          Clasificá tus gastos. Las categorías son por workspace.
-        </p>
-      </div>
+      <PageHeader
+        title={t('title')}
+        description={t('pageDescription')}
+      />
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Lista</CardTitle>
+          <CardTitle className="text-base">{t('listTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <CategoriesList workspaceId={ws.active.id} categories={categories} />
+          <CategoriesList workspaceId={workspace.id} categories={categories} />
         </CardContent>
       </Card>
     </div>

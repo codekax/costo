@@ -1,6 +1,7 @@
 'use client';
 
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   ChartContainer,
   ChartTooltip,
@@ -10,18 +11,26 @@ import {
 import { formatCurrency } from '@/utils/format';
 import type { MonthlyPoint } from '@/lib/db/queries/dashboard';
 
-const MONTH_LABELS_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+import { CURRENCY_SERIES, type CurrencySeriesKey } from '@/constants/currencies';
+
+function buildMonthLabels(locale: string): string[] {
+  const fmt = new Intl.DateTimeFormat(locale, { month: 'short' });
+  return Array.from({ length: 12 }, (_, i) => fmt.format(new Date(2000, i, 1)).replace(/\.$/, ''));
+}
 
 const chartConfig = {
-  ars: { label: 'ARS', color: 'var(--chart-1)' },
-  usd: { label: 'USD', color: 'var(--chart-2)' },
+  ars: { label: CURRENCY_SERIES.ars, color: 'var(--chart-1)' },
+  usd: { label: CURRENCY_SERIES.usd, color: 'var(--chart-2)' },
 } satisfies ChartConfig;
 
 export function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
+  const locale = useLocale();
+  const t = useTranslations('dashboard');
+  const monthLabels = buildMonthLabels(locale);
   const formatted = data.map((p) => {
     const monthIdx = parseInt(p.month.slice(5, 7), 10) - 1;
     return {
-      label: MONTH_LABELS_ES[monthIdx] ?? p.month,
+      label: monthLabels[monthIdx] ?? p.month,
       ars: p.ars,
       usd: p.usd,
     };
@@ -31,7 +40,7 @@ export function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
   if (!hasData) {
     return (
       <div className="flex h-[280px] items-center justify-center text-sm text-muted-foreground">
-        Sin datos suficientes para graficar evolución mensual.
+        {t('monthlyEmpty')}
       </div>
     );
   }
@@ -72,14 +81,17 @@ export function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
           content={
             <ChartTooltipContent
               labelKey="label"
-              formatter={(value, name) => (
-                <div className="flex w-full items-center justify-between gap-4">
-                  <span>{name === 'ars' ? 'ARS' : 'USD'}</span>
-                  <span className="font-mono font-semibold tabular-nums">
-                    {formatCurrency(Number(value), name === 'ars' ? 'ARS' : 'USD')}
-                  </span>
-                </div>
-              )}
+              formatter={(value, name) => {
+                const currency = CURRENCY_SERIES[name as CurrencySeriesKey];
+                return (
+                  <div className="flex w-full items-center justify-between gap-4">
+                    <span>{currency}</span>
+                    <span className="tabular-nums [font-weight:500]">
+                      {formatCurrency(Number(value), currency)}
+                    </span>
+                  </div>
+                );
+              }}
             />
           }
         />

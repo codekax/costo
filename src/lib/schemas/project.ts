@@ -1,20 +1,46 @@
 import { z } from 'zod';
 
-export const ProjectTypeSchema = z.enum(['renovation', 'general', 'other']);
+/**
+ * Project "type" used to be an enum (renovation/general/other). It's now
+ * free-text — the user defines their own taxonomy per workspace and the form
+ * suggests previously-used values via autocomplete (CreatableCombobox).
+ *
+ * We still expose `ProjectTypeSchema` and `ProjectType` for typing, but the
+ * shape is now `string` with reasonable bounds.
+ */
+export const ProjectTypeSchema = z.string().trim().min(1).max(60);
 export type ProjectType = z.infer<typeof ProjectTypeSchema>;
 
+/** Built-in suggestions seeded into the autocomplete when the workspace is empty. */
+export const PROJECT_TYPE_SUGGESTIONS = [
+  'Renovación',
+  'Construcción',
+  'Mantenimiento',
+  'General',
+  'Mudanza',
+  'Otro',
+] as const;
+
 const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'invalid_date');
+
+/** Treat empty string / null / NaN as "not provided" before zod validates. */
+const emptyToUndefined = (schema: z.ZodTypeAny) =>
+  z.preprocess((v) => {
+    if (v === '' || v === null) return undefined;
+    if (typeof v === 'number' && Number.isNaN(v)) return undefined;
+    return v;
+  }, schema.optional());
 
 export const CreateProjectSchema = z
   .object({
     workspaceId: z.string().uuid(),
     name: z.string().trim().min(1).max(100),
     type: ProjectTypeSchema,
-    description: z.string().trim().max(2000).optional(),
-    startDate: dateString.optional(),
-    endDate: dateString.optional(),
-    budgetArs: z.number().positive().finite().optional(),
-    budgetUsd: z.number().positive().finite().optional(),
+    description: emptyToUndefined(z.string().trim().max(2000)),
+    startDate: emptyToUndefined(dateString),
+    endDate: emptyToUndefined(dateString),
+    budgetArs: emptyToUndefined(z.number().positive().finite()),
+    budgetUsd: emptyToUndefined(z.number().positive().finite()),
   })
   .refine((v) => !v.endDate || !v.startDate || v.endDate >= v.startDate, {
     path: ['endDate'],

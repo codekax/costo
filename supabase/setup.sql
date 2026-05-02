@@ -158,15 +158,15 @@ create policy inv_delete on public.invitations for delete
 -- 0002 — projects, categories, vendors
 -- ============================================================================
 
-do $$ begin
-  create type public.project_type as enum ('renovation', 'general', 'other');
-exception when duplicate_object then null; end $$;
+-- project.type is free-text (was an enum prior to migration 0009).
+-- Users define their own taxonomy per workspace; the form autocompletes from
+-- previously-used values.
 
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   name text not null check (length(name) between 1 and 100),
-  type public.project_type not null default 'general',
+  type text not null default 'General' check (length(type) between 1 and 60),
   description text,
   start_date date,
   end_date date,

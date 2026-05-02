@@ -1,34 +1,23 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { UpdateCategorySchema } from '@/lib/schemas/category';
-import { createServerClient } from '@/lib/supabase/server';
-import { logger } from '@/lib/logger';
-import { actionError, actionOk, type ActionResult } from '@/actions/_shared';
+import { actionError, actionOk, defineAction } from '@/actions/_define-action';
 
-export async function updateCategory(input: unknown): Promise<ActionResult> {
-  const parsed = UpdateCategorySchema.safeParse(input);
-  if (!parsed.success) return actionError('invalid_input', parsed.error.flatten().fieldErrors);
-
-  try {
-    const supabase = await createServerClient();
+export const updateCategory = defineAction<typeof UpdateCategorySchema, void>({
+  schema: UpdateCategorySchema,
+  context: 'categories.updateCategory',
+  revalidate: ['/categories', '/expenses'],
+  handler: async ({ data, supabase }) => {
     const update: Record<string, unknown> = {};
-    if (parsed.data.name !== undefined) update.name = parsed.data.name;
-    if (parsed.data.color !== undefined) update.color = parsed.data.color;
-    if (parsed.data.icon !== undefined) update.icon = parsed.data.icon;
+    if (data.name !== undefined) update.name = data.name;
+    if (data.color !== undefined) update.color = data.color;
+    if (data.icon !== undefined) update.icon = data.icon;
 
-    const { error } = await supabase.from('categories').update(update).eq('id', parsed.data.id);
-
+    const { error } = await supabase.from('categories').update(update).eq('id', data.id);
     if (error) {
       if (error.code === '23505') return actionError('conflict');
       throw error;
     }
-
-    revalidatePath('/categories');
-    revalidatePath('/expenses');
     return actionOk(undefined);
-  } catch (error) {
-    logger.error('categories.updateCategory', { error });
-    return actionError('unknown');
-  }
-}
+  },
+});
