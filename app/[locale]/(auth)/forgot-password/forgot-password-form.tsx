@@ -41,7 +41,7 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-[36px] leading-[1.05] tracking-[-0.72px] [font-weight:500]">
+        <CardTitle className="text-2xl leading-[1.1] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.05] lg:tracking-[-0.72px]">
           {t('forgotPassword')}
         </CardTitle>
       </CardHeader>

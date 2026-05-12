@@ -24,13 +24,14 @@ export default async function ExpenseDetailPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-[36px] leading-[1.22] tracking-[-0.72px] [font-weight:500]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">
             {expense.description || t('detailFallbackTitle')}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {formatDate(expense.paid_at)} ·{' '}
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span>{formatDate(expense.paid_at)}</span>
+            <span aria-hidden>·</span>
             <Badge
               variant="outline"
               style={{ borderColor: expense.category.color, color: expense.category.color }}
@@ -39,7 +40,9 @@ export default async function ExpenseDetailPage({
             </Badge>
           </p>
         </div>
-        <DeleteExpenseButton id={id} />
+        <div className="self-start sm:self-auto">
+          <DeleteExpenseButton id={id} />
+        </div>
       </div>
 
       <Card>
@@ -47,7 +50,7 @@ export default async function ExpenseDetailPage({
           <CardTitle className="text-base">{t('amountSectionTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-3xl tabular-nums tracking-[-0.03em] [font-weight:540]">
+          <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
             {formatCurrency(Number(expense.amount), expense.currency)}
           </p>
           <p className="text-sm tabular-nums text-muted-foreground">

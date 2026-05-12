@@ -144,12 +144,12 @@ export default async function DashboardPage({
           </div>
 
           <Card>
-            <CardHeader className="flex-row items-center justify-between">
-              <div>
+            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
                 <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
                 <CardDescription>{t('recentExpensesDescription')}</CardDescription>
               </div>
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="ghost" size="sm" className="self-start sm:self-auto">
                 <Link href="/expenses">{t('viewAll')}</Link>
               </Button>
             </CardHeader>
@@ -180,7 +180,7 @@ function TotalCard({
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl tabular-nums tracking-[-0.03em] [font-weight:540]">
+        <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
           {formatCurrency(amount, currency)}
         </p>
       </CardContent>

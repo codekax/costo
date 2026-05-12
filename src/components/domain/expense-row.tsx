@@ -13,7 +13,7 @@ import { ExpenseRowActions } from '@/components/domain/expense-row-actions';
 export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
   const t = useTranslations('expenses');
   return (
-    <div className="group relative flex items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-4 transition-colors hover:bg-foreground/[0.03]">
+    <div className="group relative flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-4 transition-colors hover:bg-foreground/[0.03] sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <Link
         href={`/expenses/${expense.id}`}
         className="absolute inset-0 z-0 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
@@ -38,8 +38,8 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
         </div>
       </div>
 
-      <div className="relative z-10 flex items-center gap-3">
-        <div className="pointer-events-none flex flex-col items-end gap-1">
+      <div className="relative z-10 flex items-center justify-between gap-3 sm:justify-end">
+        <div className="pointer-events-none flex flex-row items-center gap-2 sm:flex-col sm:items-end sm:gap-1">
           <span className="text-base [font-weight:500] tracking-[-0.32px] tabular-nums">
             {formatCurrency(Number(expense.amount), expense.currency)}
           </span>

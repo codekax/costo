@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { createServerClient } from '@/lib/supabase/server';
 import { getWorkspaceById } from '@/lib/db/queries/workspaces';
 import { getWorkspaceMembers, getPendingInvitations } from '@/lib/db/queries/members';
@@ -33,18 +34,18 @@ export default async function MembersPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-[36px] leading-[1.22] tracking-[-0.72px] [font-weight:500]">{t('membersTitle')}</h1>
-          <p className="text-sm text-muted-foreground">
+      <PageHeader
+        title={t('membersTitle')}
+        description={
+          <>
             {t('memberCount', { name: ws.name, members: memberCount })}
             {pendingCount > 0 && ` · ${t('pendingCount', { count: pendingCount })}`}
             {' · '}
             {t('slotsAvailable', { count: remaining })}
-          </p>
-        </div>
-        {isOwner && remaining > 0 && <InviteMemberDialog workspaceId={id} />}
-      </div>
+          </>
+        }
+        actions={isOwner && remaining > 0 ? <InviteMemberDialog workspaceId={id} /> : null}
+      />
 
       <Card>
         <CardHeader>
