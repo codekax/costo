@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronsUpDown, Check, Plus } from 'lucide-react';
+import { ChevronDown, Check, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
@@ -46,7 +46,7 @@ export function WorkspaceSwitcher({
           disabled={pending}
         >
           <span className="truncate">{active.name}</span>
-          <ChevronsUpDown className="size-4 opacity-60" />
+          <ChevronDown className="size-4 opacity-50" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-60">

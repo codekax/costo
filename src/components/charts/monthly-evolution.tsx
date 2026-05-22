@@ -6,7 +6,7 @@ import {
 } from 'd3';
 import { getLocale, getTranslations } from 'next-intl/server';
 
-import type { MonthlyPoint } from '@/lib/db/queries/dashboard';
+import type { Forecast, MonthlyPoint } from '@/lib/db/queries/dashboard';
 import { formatCurrency } from '@/utils/format';
 
 import { ClientTooltip, TooltipContent, TooltipTrigger } from './_client-tooltip';
@@ -22,7 +22,13 @@ import { ClientTooltip, TooltipContent, TooltipTrigger } from './_client-tooltip
  *
  * Renders fully on the server; the hover tooltip is the only client island.
  */
-export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
+export async function MonthlyEvolution({
+  data,
+  forecast,
+}: {
+  data: MonthlyPoint[];
+  forecast?: Forecast;
+}) {
   const locale = await getLocale();
   const t = await getTranslations('dashboard');
 
@@ -51,11 +57,30 @@ export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
     .domain([0, Math.max(points.length - 1, 1)])
     .range([0, 100]);
 
+  // Forecast projection — only render when the current month is partially
+  // through (>2 days elapsed, <last day) and the projected value materially
+  // exceeds the MTD value. Otherwise the dashed extension adds noise.
+  const showForecast =
+    !!forecast &&
+    forecast.daysElapsed > 2 &&
+    forecast.daysElapsed < forecast.daysInMonth - 1 &&
+    (forecast.projectedArs > forecast.mtdArs * 1.05 ||
+      forecast.projectedUsd > forecast.mtdUsd * 1.05);
+
   // Independent y-scales — each currency uses the full vertical room. This
   // is the Wise pattern: don't squash one series against the other just
-  // because the absolute amounts differ by orders of magnitude.
-  const arsMax = d3Max(points, (p) => p.ars) ?? 0;
-  const usdMax = d3Max(points, (p) => p.usd) ?? 0;
+  // because the absolute amounts differ by orders of magnitude. Forecast
+  // values participate in the max so the projection never clips above 100%.
+  const arsMax =
+    Math.max(
+      d3Max(points, (p) => p.ars) ?? 0,
+      showForecast ? forecast.projectedArs : 0,
+    );
+  const usdMax =
+    Math.max(
+      d3Max(points, (p) => p.usd) ?? 0,
+      showForecast ? forecast.projectedUsd : 0,
+    );
   const yScaleArs = scaleLinear()
     .domain([0, arsMax || 1])
     .range([100, 0]);
@@ -81,15 +106,7 @@ export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
 
   return (
     <div
-      className="relative h-[280px] w-full"
-      style={
-        {
-          '--m-top': '36px',
-          '--m-right': '92px',
-          '--m-bottom': '28px',
-          '--m-left': '12px',
-        } as React.CSSProperties
-      }
+      className="relative h-[240px] w-full [--m-bottom:28px] [--m-left:12px] [--m-right:12px] [--m-top:36px] sm:h-[280px] sm:[--m-right:92px]"
       role="img"
       aria-label={t('monthlyTitle')}
     >
@@ -167,6 +184,35 @@ export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
             />
           ))}
 
+          {/* Forecast projection — dashed vertical hint from MTD to end-of-month
+              estimate at the current month's x position. Same color tint per
+              series so the visual association reads instantly. */}
+          {showForecast && (
+            <>
+              <line
+                x1={xScale(lastPoint.idx)}
+                y1={yScaleArs(lastPoint.ars)}
+                x2={xScale(lastPoint.idx)}
+                y2={yScaleArs(forecast!.projectedArs)}
+                stroke="var(--chart-1)"
+                strokeWidth={1.25}
+                strokeDasharray="2 2.5"
+                vectorEffect="non-scaling-stroke"
+                opacity={0.85}
+              />
+              <circle
+                cx={xScale(lastPoint.idx)}
+                cy={yScaleArs(forecast!.projectedArs)}
+                r={1.6}
+                fill="var(--background)"
+                stroke="var(--chart-1)"
+                strokeDasharray="2 1.5"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+            </>
+          )}
+
           {/* USD series */}
           <path
             d={usdPath}
@@ -177,6 +223,31 @@ export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
+          {showForecast && (
+            <>
+              <line
+                x1={xScale(lastPoint.idx)}
+                y1={yScaleUsd(lastPoint.usd)}
+                x2={xScale(lastPoint.idx)}
+                y2={yScaleUsd(forecast!.projectedUsd)}
+                stroke="var(--chart-2)"
+                strokeWidth={1.25}
+                strokeDasharray="2 2.5"
+                vectorEffect="non-scaling-stroke"
+                opacity={0.85}
+              />
+              <circle
+                cx={xScale(lastPoint.idx)}
+                cy={yScaleUsd(forecast!.projectedUsd)}
+                r={1.6}
+                fill="var(--background)"
+                stroke="var(--chart-2)"
+                strokeDasharray="2 1.5"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+            </>
+          )}
           {points.map((p) => (
             <circle
               key={`usd-dot-${p.month}`}
@@ -282,13 +353,17 @@ export async function MonthlyEvolution({ data }: { data: MonthlyPoint[] }) {
 
       {/* Floating end-of-line labels — values for the most recent month,
           anchored at the right margin. Two pills stacked vertically when
-          they would overlap. Position is computed from the y-scales above. */}
+          they would overlap. Position is computed from the y-scales above.
+          Hidden on mobile — the header totals already convey the value and
+          the 92px right margin would eat 1/3 of a narrow viewport. */}
+      <div className="hidden sm:contents">
       <EndLabels
         topPercent={yScaleArs(lastPoint.ars)}
         bottomPercent={yScaleUsd(lastPoint.usd)}
         arsValue={formatCurrency(lastPoint.ars, 'ARS')}
         usdValue={formatCurrency(lastPoint.usd, 'USD')}
       />
+      </div>
 
       {/* X axis — first, last, and every-other month label */}
       <div

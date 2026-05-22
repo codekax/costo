@@ -34,14 +34,21 @@
     "signupHint": "You'll get a personal workspace automatically.",
     "checkEmail": "Done — check your email.",
     "magicLinkSent": "Link sent. Check your email.",
-    "loginSubtitle": "{email} · {brand}"
+    "loginSubtitle": "{email} · {brand}",
+    "loginTitle": "Welcome back",
+    "loginSubtitleClean": "Sign in to your expense workspace.",
+    "noAccount": "Don't have an account yet?",
+    "createOne": "Create one"
   },
   "authHero": {
     "brand": "costo",
     "watermark": "expense",
     "headline": "Expense tracking for your renovation and daily life.",
     "subhead": "Multi-project, multi-currency, shareable with your partner or family. Built for the real world, not the demo.",
-    "footer": "ARS · USD · ES · EN"
+    "footer": "ARS · USD · ES · EN",
+    "feature1": "Multi-currency ARS/USD with snapshot FX per expense.",
+    "feature2": "Shared workspace with your partner or family.",
+    "feature3": "Import your existing Excel in under a minute."
   },
   "header": {
     "userMenu": "User menu",
@@ -140,7 +147,17 @@
     "fieldNotes": "Notes",
     "fieldEmpty": "—",
     "exportCsv": "Export CSV",
-    "exporting": "Generating…"
+    "exporting": "Generating…",
+    "fxDisclosureLabel": "Adjust FX rate",
+    "fxRateShort": "FX rate",
+    "datePillToday": "Today",
+    "datePillYesterday": "Yesterday",
+    "noCategoriesTitle": "You'll need a category first",
+    "noCategoriesDescription": "Categories group your expenses (e.g. Materials, Labor). Create one before recording your first expense.",
+    "createCategoryCta": "Create category",
+    "saveAndAddAnother": "Save and add another",
+    "saveExpenseWithAmount": "Save expense {amount}",
+    "descriptionPlaceholderRich": "e.g. Cement for columns"
   },
   "projects": {
     "title": "Projects",
@@ -412,7 +429,41 @@
     "projectsEmpty": "Create a project to start tracking its progress.",
     "legendMore": "+ {count} more categories",
     "overBudget": "Over budget",
-    "ofBudget": "of budget"
+    "ofBudget": "of budget",
+    "vsPrev": "vs. {amount} prior",
+    "noBaseline": "no baseline",
+    "moversEmpty": "No significant movement vs. previous period.",
+    "topMovers": "Top movers",
+    "forecastPill": "Forecast",
+    "period": {
+      "label": "Period",
+      "month": "30 days",
+      "3m": "3 months",
+      "6m": "6 months",
+      "year": "1 year",
+      "all": "All"
+    },
+    "insights": {
+      "title": "Insights",
+      "categoryJump": "{name} grew {pct}% vs. previous period.",
+      "vendorConcentration": "{name} accounts for {pct}% of period spend.",
+      "forecast": "At this pace, end of month projects ~{projected}."
+    },
+    "alerts": {
+      "title": "Budgets at risk",
+      "near": "{pct}% {currency}",
+      "over": "Over {pct}% {currency}"
+    },
+    "quickAdd": {
+      "title": "Quick add",
+      "amount": "Amount",
+      "currency": "Currency",
+      "category": "Category",
+      "add": "Add",
+      "saving": "Saving…",
+      "moreOptions": "More options"
+    },
+    "importExcel": "Import from Excel"
   },
   "confirm": {
     "cancel": "Cancel",

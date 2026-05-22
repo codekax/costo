@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { Check } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import { Eyebrow, GhostWatermark } from '@/components/ui/mastercard';
 
@@ -34,6 +35,19 @@ export default async function AuthLayout({ children }: { children: ReactNode }) 
           <p className="max-w-md text-base text-muted-foreground [font-weight:450]">
             {t('subhead')}
           </p>
+          <ul className="max-w-md space-y-2.5 pt-2">
+            {(['feature1', 'feature2', 'feature3'] as const).map((key) => (
+              <li key={key} className="flex items-start gap-3 text-sm [font-weight:450] text-foreground">
+                <span
+                  className="mt-[2px] inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent"
+                  aria-hidden
+                >
+                  <Check className="size-3" strokeWidth={2.5} />
+                </span>
+                <span>{t(key)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="text-sm text-muted-foreground [font-weight:450]">{t('footer')}</div>
       </section>

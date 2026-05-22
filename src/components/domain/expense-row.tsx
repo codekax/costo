@@ -24,7 +24,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
 
   return (
     <div
-      className="group cv-row relative flex items-center gap-3 rounded-2xl bg-card px-4 py-3 transition-colors hover:bg-muted/60"
+      className="group cv-row relative flex items-center gap-2.5 rounded-2xl bg-card px-3 py-2.5 transition-colors hover:bg-muted/60 sm:gap-3 sm:px-4 sm:py-3"
       style={{ viewTransitionName: `expense-${expense.id}` }}
     >
       <Link
@@ -35,7 +35,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
 
       {/* Leading swatch — iOS Reminders style, category color in 36px circle */}
       <div
-        className="pointer-events-none relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full"
+        className="pointer-events-none relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full sm:size-10"
         style={{ backgroundColor: `${expense.category.color}22` }}
         aria-hidden
       >
@@ -62,7 +62,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
         <span className="tabular-nums text-[15px] [font-weight:600] tracking-[-0.01em] text-foreground">
           {formatCurrency(Number(expense.amount), expense.currency)}
         </span>
-        <span className="tabular-nums text-[12px] text-muted-foreground">
+        <span className="hidden tabular-nums text-[12px] text-muted-foreground sm:inline">
           ≈{' '}
           {expense.currency === 'USD'
             ? formatCurrency(Number(expense.amount_ars), 'ARS')
@@ -74,7 +74,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
       <div className="relative z-10 flex shrink-0 items-center gap-1">
         <ExpenseRowActions id={expense.id} />
         <ChevronRight
-          className="pointer-events-none size-4 text-muted-foreground/60"
+          className="pointer-events-none hidden size-4 text-muted-foreground/60 sm:block"
           aria-hidden
         />
       </div>

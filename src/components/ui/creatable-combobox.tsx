@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition, type ReactNode } from 'react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronDown, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
@@ -124,7 +124,7 @@ export function CreatableCombobox({
           className={cn('w-full justify-between font-normal', className)}
         >
           <span className="truncate">{selected ? selected.label : placeholderText}</span>
-          <ChevronsUpDown className="size-4 opacity-60" />
+          <ChevronDown className="size-4 opacity-50" aria-hidden />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">

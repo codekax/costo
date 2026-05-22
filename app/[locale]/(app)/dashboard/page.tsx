@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { Plus, Receipt } from 'lucide-react';
+import { FileSpreadsheet, Plus, Receipt } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -19,36 +19,57 @@ import { TopVendors } from '@/components/charts/top-vendors';
 import { ProjectProgressList } from '@/components/charts/project-progress';
 import { ExpenseRow } from '@/components/domain/expense-row';
 
+import { TotalCard } from '@/components/dashboard/total-card';
+import { PeriodSelector } from '@/components/dashboard/period-selector';
+import { InsightsBanner } from '@/components/dashboard/insights-banner';
+import { BudgetAlerts } from '@/components/dashboard/budget-alerts';
+import { TopMovers } from '@/components/dashboard/top-movers';
+import { QuickAddExpense } from '@/components/dashboard/quick-add';
+
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getDashboardData } from '@/lib/db/queries/dashboard';
 import { getProjects } from '@/lib/db/queries/projects';
-import { getWorkspaceTotals } from '@/lib/db/queries/expenses';
-import { formatCurrency } from '@/utils/format';
+import { getCategories } from '@/lib/db/queries/categories';
+import { parseDashboardPeriod } from '@/lib/dashboard-period';
 
 /**
- * All dashboard charts are RSC. SVG is rendered on the server with d3
- * (scaleLinear/pie/arc/line) and the only client island is the hover
- * tooltip helper at src/components/charts/_client-tooltip.tsx.
+ * Dashboard composition:
+ *  - PageHeader + PeriodSelector
+ *  - BudgetAlerts (only if any project >80% utilisation)
+ *  - InsightsBanner (rule-based, hides itself when nothing meaningful)
+ *  - TotalCard ×2 with delta vs prev period + 12-week sparkline
+ *  - QuickAddExpense (no-op when no categories yet)
+ *  - Category donut + monthly evolution (with forecast)
+ *  - Project progress + Top movers
+ *  - Top vendors + recent expenses
+ *
+ * All sections are RSC except PeriodSelector and QuickAddExpense which need
+ * interactivity. The page itself stays under the 150-line limit by keeping
+ * derivation logic in the dashboard query and presentation in components.
  */
-
 export default async function DashboardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ period?: string }>;
 }) {
-  const { locale } = await params;
+  const [{ locale }, sp] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
   const t = await getTranslations('dashboard');
   const tExp = await getTranslations('expenses');
 
+  const period = parseDashboardPeriod(sp.period);
   const { workspace, supabase } = await requireWorkspaceContext();
-  const [data, allTotals, projects] = await Promise.all([
-    getDashboardData(supabase, workspace.id),
-    getWorkspaceTotals(supabase, workspace.id),
+  const [data, projects, categories] = await Promise.all([
+    getDashboardData(supabase, workspace.id, period),
     getProjects(supabase, workspace.id, { archived: false }),
+    getCategories(supabase, workspace.id),
   ]);
 
-  const isEmpty = allTotals.count === 0;
+  const isEmpty = data.totals.count === 0 && period === 'all';
+  const sparkArs = data.weekly.map((w) => w.ars);
+  const sparkUsd = data.weekly.map((w) => w.usd);
 
   return (
     <div className="space-y-6">
@@ -64,9 +85,34 @@ export default async function DashboardPage({
         }
       />
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PeriodSelector value={period} />
+      </div>
+
+      <BudgetAlerts projects={projects} />
+
+      <InsightsBanner
+        byCategory={data.byCategory}
+        topVendors={data.topVendors}
+        totals={data.totals}
+        forecast={data.forecast}
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <TotalCard label={t('totalArs')} amount={allTotals.ars} currency="ARS" />
-        <TotalCard label={t('totalUsd')} amount={allTotals.usd} currency="USD" />
+        <TotalCard
+          label={t('totalArs')}
+          amount={data.totals.ars}
+          previous={data.prevTotals?.ars ?? null}
+          currency="ARS"
+          spark={sparkArs}
+        />
+        <TotalCard
+          label={t('totalUsd')}
+          amount={data.totals.usd}
+          previous={data.prevTotals?.usd ?? null}
+          currency="USD"
+          spark={sparkUsd}
+        />
       </div>
 
       {isEmpty ? (
@@ -75,15 +121,27 @@ export default async function DashboardPage({
           title={t('emptyTitle')}
           description={t('emptyDescription')}
           action={
-            <Button asChild>
-              <Link href="/expenses/new">
-                <Plus className="mr-1 size-4" /> {t('loadFirst')}
-              </Link>
-            </Button>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Button asChild>
+                <Link href="/expenses/new">
+                  <Plus className="mr-1 size-4" /> {t('loadFirst')}
+                </Link>
+              </Button>
+              <Button asChild variant="ghost">
+                <Link href="/import">
+                  <FileSpreadsheet className="mr-1 size-4" /> {t('importExcel')}
+                </Link>
+              </Button>
+            </div>
           }
         />
       ) : (
         <>
+          <QuickAddExpense
+            workspaceId={workspace.id}
+            categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
+          />
+
           <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
             <Card className="reveal cv-chart-card">
               <CardHeader>
@@ -112,7 +170,7 @@ export default async function DashboardPage({
                 <CardDescription>{t('monthlyDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <MonthlyEvolution data={data.monthly} />
+                <MonthlyEvolution data={data.monthly} forecast={data.forecast} />
               </CardContent>
             </Card>
           </div>
@@ -129,6 +187,17 @@ export default async function DashboardPage({
 
             <Card className="reveal cv-card">
               <CardHeader>
+                <CardTitle className="text-base">{t('topMovers')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TopMovers categories={data.byCategory} />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <Card className="reveal cv-card">
+              <CardHeader>
                 <CardTitle className="text-base">{t('topVendors')}</CardTitle>
                 <CardDescription>{t('topVendorsDescription')}</CardDescription>
               </CardHeader>
@@ -136,57 +205,26 @@ export default async function DashboardPage({
                 <TopVendors data={data.topVendors} />
               </CardContent>
             </Card>
-          </div>
 
-          <Card className="reveal cv-card">
-            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
-                <CardDescription>{t('recentExpensesDescription')}</CardDescription>
-              </div>
-              <Button asChild variant="ghost" size="sm" className="self-start sm:self-auto">
-                <Link href="/expenses">{t('viewAll')}</Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {data.recent.map((e) => (
-                <ExpenseRow key={e.id} expense={e} />
-              ))}
-            </CardContent>
-          </Card>
+            <Card className="reveal cv-card">
+              <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
+                  <CardDescription>{t('recentExpensesDescription')}</CardDescription>
+                </div>
+                <Button asChild variant="ghost" size="sm" className="self-start sm:self-auto">
+                  <Link href="/expenses">{t('viewAll')}</Link>
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {data.recent.map((e) => (
+                  <ExpenseRow key={e.id} expense={e} />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </>
       )}
     </div>
-  );
-}
-
-function TotalCard({
-  label,
-  amount,
-  currency,
-}: {
-  label: string;
-  amount: number;
-  currency: 'ARS' | 'USD';
-}) {
-  return (
-    <Card>
-      <CardContent className="space-y-1">
-        <p className="eyebrow">
-          <span
-            className="eyebrow-dot"
-            style={{
-              backgroundColor:
-                currency === 'ARS' ? 'var(--chart-1)' : 'var(--chart-2)',
-            }}
-            aria-hidden
-          />
-          {label}
-        </p>
-        <p className="truncate text-[28px] tabular-nums tracking-[-0.022em] [font-weight:700] leading-[1.18] sm:text-[34px]">
-          {formatCurrency(amount, currency)}
-        </p>
-      </CardContent>
-    </Card>
   );
 }

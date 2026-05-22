@@ -9,32 +9,37 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design language: iOS / Apple HIG (Flighty-inspired)
+ * Design language: apple.com translated to a productivity app.
  *
- * Light:  System gray canvas (#F2F2F7) — Apple's `systemGroupedBackground`.
- *         Pure white cards elevated with very soft, diffuse shadows. Primary
- *         action ink black (#0A0A0B). Status tints (emerald/amber/red/blue)
- *         use the iOS system color hues with 10% surface tint + 700 text.
+ * Single accent — Action Blue (#0066cc). Every interactive signal (link,
+ * primary CTA, focus ring) speaks one color. On dark surfaces Action Blue
+ * disappears, so we shift to Sky Link Blue (#2997ff) — same role, different
+ * legibility.
  *
- * Dark:   Pure black canvas (#000) with elevated card stacks (#1C1C1E /
- *         #2C2C2E) — the Apple "elevated" two-step grouping. Same status
- *         tint vocabulary, brighter on dark.
+ * Surface — Pure White cards on a Parchment (#f5f5f7) canvas in light mode;
+ * #1c1c1e cards on pure black canvas in dark mode. No gradients. No drop
+ * shadow on UI chrome (cards, buttons, text). Shadow is reserved for
+ * photographic elevation only — none of which currently lives in this app.
  *
- * Border radius: 8px (micro/pills internals), 16px (chips), 24px (cards),
- *         32px (large cards / sheets), 999px (pill — nav, chips, inputs).
- *         Continuous-corner feel via larger radii than the visual eye expects.
+ * Radius vocabulary — 4 tokens. Pill (full) for primary actions and inputs;
+ * 18px for utility cards; 11px for Pearl secondary capsules; 8px for compact
+ * utility (Sign In / Bag style dark buttons). Nothing in between.
  *
- * Font stack: -apple-system / SF Pro first, falling back to Sofia Sans
- *         Variable. On macOS/iOS this renders native SF Pro Display.
+ * Font stack — `system-ui, -apple-system, BlinkMacSystemFont` resolves to
+ * real SF Pro on Apple platforms; Sofia Sans Variable on non-Apple. Weight
+ * ladder is 400 / 600 / 700 with weight 300 reserved for the rare airy
+ * paragraph. Weight 500 is deliberately absent — Apple's typographic rule.
  *
- * Text scale ratios mirror Apple HIG large-title / title-1 / title-2 / body.
+ * Headlines — negative letter-spacing at display sizes (the "Apple tight"
+ * cadence). Body stays 17px / -0.022em.
  */
 
 @theme inline {
-  /* SF Pro on Apple platforms, Sofia Sans elsewhere, system-ui as ultimate fallback. */
+  /* On Apple platforms this resolves to native SF Pro; elsewhere falls back
+   * to Sofia Sans Variable as the closest open-source approximation. */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-    var(--font-sofia-sans), system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    var(--font-sofia-sans), 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono:
     ui-monospace, 'SF Mono', Menlo, Monaco, 'Cascadia Code', monospace;
 
@@ -77,76 +82,91 @@
   --color-status-info-foreground: var(--status-info-foreground);
 
   /*
-   * iOS-feeling radius scale. Continuous-corner illusion via larger radii
-   * than the eye expects. `rounded-md` anchors at 16px (Apple chip);
-   * `rounded-lg` jumps to 24px (Apple card); `rounded-xl` to 32px
-   * (sheets / large containers).
+   * Apple radius vocabulary — 4 useful steps. Anything outside this ladder
+   * is a smell. `rounded-sm` = compact utility (Sign In / Bag). `rounded-md`
+   * = Pearl secondary capsule. `rounded-lg` = utility card. `rounded-xl/2xl`
+   * = large container / dialog. Pills use `rounded-full`.
    */
-  --radius-sm: 0.5rem; /* 8px — micro chips, dense interior */
-  --radius-md: 1rem; /* 16px — chips, secondary buttons */
-  --radius-lg: 1.5rem; /* 24px — cards, popovers */
-  --radius-xl: 2rem; /* 32px — sheets, large cards */
-  --radius-2xl: 2.5rem; /* 40px — hero containers, dialogs */
+  --radius-sm: 0.5rem; /* 8px — compact utility */
+  --radius-md: 0.6875rem; /* 11px — Pearl secondary capsule */
+  --radius-lg: 1.125rem; /* 18px — utility cards, accessories grid */
+  --radius-xl: 1.5rem; /* 24px — large containers */
+  --radius-2xl: 1.5rem; /* 24px — alias, kept for compat with rounded-2xl */
+  --radius-3xl: 1.5rem; /* 24px — alias, kept for compat with rounded-3xl */
 
-  /* iOS-style shadows — very diffuse, very low opacity, no hard drops. */
-  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04), 0 1px 1px 0 rgba(15, 23, 42, 0.02);
-  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 12px 32px -8px rgba(15, 23, 42, 0.12), 0 6px 12px -6px rgba(15, 23, 42, 0.06);
-  --shadow-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.08);
-  --shadow-focus: 0 0 0 4px color-mix(in oklab, var(--ring) 25%, transparent);
+  /*
+   * Shadows are intentionally near-invisible — Apple's UI carries elevation
+   * via surface change (canvas ↔ parchment ↔ tile), not via drop. The one
+   * exception in Apple's system is the product shadow on photographic
+   * imagery; we don't have product photography, so these tokens stay only
+   * as fallbacks for floating chrome (popovers, dialogs).
+   */
+  --shadow-sm: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 4px 16px -8px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 2px var(--ring);
 }
 
 :root {
-  /* Default radius — anchors `rounded-md` (iOS chip 16px). */
-  --radius: 1rem;
+  /* Default radius — anchors `rounded` to 11px (Pearl capsule). */
+  --radius: 0.6875rem;
 
-  /* iOS systemGroupedBackground — neutral cool gray, never pure white. */
-  --background: #f2f2f7;
-  --foreground: #0a0a0b; /* near-black, slight blue undertone */
+  /* Parchment canvas — Apple's signature off-white. Just different enough
+   * from white to give cards a surface they can rest on. */
+  --background: #f5f5f7;
+  --foreground: #1d1d1f; /* Near-Black Ink — softer than pure black */
 
   --card: #ffffff;
-  --card-foreground: #0a0a0b;
+  --card-foreground: #1d1d1f;
   --popover: #ffffff;
-  --popover-foreground: #0a0a0b;
+  --popover-foreground: #1d1d1f;
 
-  /* Primary CTA: near-black pill (Apple's tinted button on light) */
-  --primary: #0a0a0b;
+  /* Primary CTA: Near-Black Ink pill (iOS HIG pattern for filled buttons
+   * in apps). Action Blue stays as the inline-link / focus / accent color,
+   * never the surface of a CTA. */
+  --primary: #1d1d1f;
   --primary-foreground: #ffffff;
 
-  /* Secondary surface — white pill on gray bg */
-  --secondary: #ffffff;
-  --secondary-foreground: #0a0a0b;
+  /* Pearl Button surface — lighter than parchment so secondary buttons
+   * still read as buttons against the canvas. */
+  --secondary: #fafafc;
+  --secondary-foreground: #1d1d1f;
 
-  /* iOS systemGray6 fills (muted surfaces inside cards) */
-  --muted: #efeff4;
-  --muted-foreground: #6b6b73; /* iOS secondaryLabel */
+  /* Muted surfaces — barely-tinted fills inside cards. */
+  --muted: #f0f0f0;
+  --muted-foreground: #6e6e73;
 
-  /* Accent: iOS blue — used for links, focused states, info chips */
-  --accent: #0a84ff;
+  /* Single-accent rule: accent = primary. Use Action Blue everywhere a
+   * "click me" signal is needed. */
+  --accent: #0066cc;
   --accent-foreground: #ffffff;
 
-  /* Destructive: iOS systemRed */
-  --destructive: #ff3b30;
+  --destructive: #d92121;
   --destructive-foreground: #ffffff;
 
-  /* Success: iOS systemGreen */
-  --success: #34c759;
+  --success: #1f7a3a;
 
-  /* Hairlines — iOS separator color (slightly transparent gray) */
-  --border: #e5e5ea;
-  --input: #d8d8dd;
+  /* Hairlines — soft 1px rules; not visible enough to feel chrome. */
+  --border: #e0e0e0;
+  --input: #e0e0e0;
 
-  /* Focus ring: iOS blue (matches accent) */
-  --ring: #0a84ff;
+  /* Focus ring: Focus Blue — marginally brighter than Action Blue. */
+  --ring: #0071e3;
 
-  /* Inline link: iOS blue */
-  --link: #0a84ff;
+  /* Inline link: Action Blue. Sky Link Blue lives in the dark scope. */
+  --link: #0066cc;
 
-  /* Ghost watermark (rarely used) */
-  --ghost: #e5e5ea;
+  /* Ghost watermark (auth hero only) */
+  --ghost: #f0f0f0;
 
-  /* iOS status colors — used by Badge variants + ProjectProgressList */
-  --status-success: #e9f9ee; /* tint */
+  /*
+   * Status tints — neutral surface for inline alerts. Apple itself doesn't
+   * surface these patterns on the analyzed pages (no validation states in
+   * the marketing surfaces), so we keep our own restrained palette but
+   * realign hues toward the brand-quiet greys / amber / red.
+   */
+  --status-success: #e9f9ee;
   --status-success-foreground: #1f7a3a;
   --status-warning: #fff4e5;
   --status-warning-foreground: #aa5d00;
@@ -155,39 +175,54 @@
   --status-info: #e6f1ff;
   --status-info-foreground: #0050b8;
 
-  /* Charts — Apple system palette: blue, orange, green, purple, gray */
-  --chart-1: #0a84ff;
-  --chart-2: #ff9500;
-  --chart-3: #34c759;
-  --chart-4: #af52de;
-  --chart-5: #8e8e93;
+  /*
+   * Charts — iOS system palette. The "single accent" rule applies to UI
+   * chrome (buttons/links/focus); data viz needs multi-color encoding to be
+   * legible (Apple Health rings, Stocks gains/losses, Activity). We use the
+   * iOS palette here so dashboards stay readable without inventing a brand.
+   */
+  --chart-1: #0066cc; /* Action Blue — ARS */
+  --chart-2: #ff9500; /* iOS Orange — USD */
+  --chart-3: #34c759; /* iOS Green — positive flow */
+  --chart-4: #af52de; /* iOS Purple */
+  --chart-5: #8e8e93; /* iOS Gray */
 }
 
 .dark {
   /*
-   * Dark = iOS dark mode. Pure black canvas with two-step elevated grouping
-   * (Apple's `systemBackground` → `secondarySystemBackground`).
+   * Dark mode follows Apple TV+ / Photos / Music premium pattern:
+   *   canvas:    #1d1d1f (warm dark — sibling of Ink Black, not pure void)
+   *   card:      #141416 (DEEPER than canvas — content tiles sink in, the
+   *              "movie theater" feel that reads premium Apple)
+   *   popover:   #2c2c2e (lifted above canvas — dropdowns float forward)
+   *
+   * Inverse of iOS grouped-background. The visual signal: canvas = stage,
+   * cards = framed content (slightly recessed), popovers = floating chrome.
+   * Pure black (#000) stays reserved for video frames and global nav.
    */
-  --background: #000000;
+  --background: #1d1d1f;
   --foreground: #ffffff;
 
-  --card: #1c1c1e; /* iOS secondarySystemBackground */
+  --card: #141416;
   --card-foreground: #ffffff;
-  --popover: #2c2c2e; /* iOS tertiarySystemBackground — elevated above cards */
+  --popover: #2c2c2e;
   --popover-foreground: #ffffff;
 
-  /* On dark, white becomes the primary CTA pill */
+  /* iOS HIG filled-button: white pill on dark, ink text. */
   --primary: #ffffff;
-  --primary-foreground: #0a0a0b;
+  --primary-foreground: #1d1d1f;
 
-  --secondary: #1c1c1e;
+  /* Secondary button surface — slightly lifted from canvas so secondary
+   * pills still read as actionable against the dark stage. */
+  --secondary: #2c2c2e;
   --secondary-foreground: #ffffff;
 
-  --muted: #1c1c1e;
-  --muted-foreground: #98989f; /* iOS secondaryLabel on dark */
+  /* Muted = between canvas and card, used for filled chips/hover. */
+  --muted: #232325;
+  --muted-foreground: #98989f;
 
-  /* iOS blue holds vibrancy on dark */
-  --accent: #0a84ff;
+  /* Sky Link Blue — accent for inline links / focus on dark tiles. */
+  --accent: #2997ff;
   --accent-foreground: #ffffff;
 
   --destructive: #ff453a;
@@ -195,12 +230,15 @@
 
   --success: #30d158;
 
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.18);
+  /* Premium hairlines — visible enough to define edges but never chrome-y.
+   * Lower alpha than iOS HIG so cards rely on the surface-color sink, not
+   * the border, to read as separated. */
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.14);
 
   --ring: #0a84ff;
 
-  --link: #0a84ff;
+  --link: #2997ff;
 
   --ghost: #1c1c1e;
 
@@ -211,13 +249,14 @@
   --status-warning-foreground: #ffb763;
   --status-danger: rgba(255, 69, 58, 0.2);
   --status-danger-foreground: #ff8a82;
-  --status-info: rgba(10, 132, 255, 0.18);
+  --status-info: rgba(41, 151, 255, 0.18);
   --status-info-foreground: #6bb5ff;
 
-  --chart-1: #0a84ff;
-  --chart-2: #ff9f0a;
-  --chart-3: #30d158;
-  --chart-4: #bf5af2;
+  /* Charts on dark — same iOS palette, brighter variants for tile bg. */
+  --chart-1: #2997ff; /* Sky Link Blue — ARS */
+  --chart-2: #ff9f0a; /* iOS Orange (dark) — USD */
+  --chart-3: #30d158; /* iOS Green (dark) */
+  --chart-4: #bf5af2; /* iOS Purple (dark) */
   --chart-5: #98989f;
 }
 
@@ -429,13 +468,13 @@
 
 @layer components {
   /*
-   * iOS footnote/eyebrow — used for small uppercase labels above values
-   * (e.g. "ARS" above the dashboard total). 11/13 with wider tracking.
+   * Small uppercase eyebrow above section values. Tracking is slightly wide
+   * to read as a category label rather than body copy. No decorative dot —
+   * Apple's eyebrows are typography-only.
    */
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
     font-size: 11px;
     font-weight: 600;
     line-height: 1.18;
@@ -444,38 +483,15 @@
     color: var(--muted-foreground);
   }
 
-  .eyebrow-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 9999px;
-    background-color: var(--accent);
-  }
-
   /*
-   * Hero gradient (auth screens) — dark iOS-feel. Subtle radial layers,
-   * mostly-black with deep neutral lift in corners.
+   * Hero gradient (auth screens only). Atmosphere comes from photography on
+   * Apple; we don't ship product imagery, so a quiet radial layer fills the
+   * narrative role on the auth split-screen left panel.
    */
   .hero-gradient {
     background:
       radial-gradient(circle at 20% 0%, #1c1c1e 0%, transparent 60%),
       radial-gradient(circle at 80% 100%, #000000 0%, transparent 55%),
       linear-gradient(180deg, #0a0a0b 0%, #000000 100%);
-  }
-
-  /*
-   * iOS-style group container — used for stacked rows like Settings.
-   * White rounded card with light separator lines between rows.
-   */
-  .ios-group {
-    background-color: var(--card);
-    border-radius: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-
-  .ios-group > * + * {
-    border-top: 1px solid var(--border);
   }
 }

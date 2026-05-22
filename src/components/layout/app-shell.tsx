@@ -102,10 +102,7 @@ export function AppShell({
           )}
         >
           {!collapsed ? (
-            <span className="eyebrow">
-              <span className="eyebrow-dot" aria-hidden />
-              costo
-            </span>
+            <span className="eyebrow">costo</span>
           ) : null}
           <Button
             variant="ghost"
@@ -125,7 +122,7 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-col">
         <Header email={email} workspace={workspace} workspaces={workspaces} />
-        <main className="mx-auto w-full flex-1 overflow-y-auto px-6 py-10 lg:px-12 lg:py-14">
+        <main className="mx-auto w-full flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-10 lg:px-12 lg:py-14">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>

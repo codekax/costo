@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronDown, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,7 @@ export function VendorCombobox({
           className="w-full justify-between [font-weight:450]"
         >
           <span className="truncate">{selected ? selected.name : tVendors('noVendor')}</span>
-          <ChevronsUpDown className="size-4 opacity-60" />
+          <ChevronDown className="size-4 opacity-50" aria-hidden />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">

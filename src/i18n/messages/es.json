@@ -34,14 +34,21 @@
     "signupHint": "Vas a recibir un workspace personal automáticamente.",
     "checkEmail": "Listo — revisá tu email.",
     "magicLinkSent": "Link enviado. Revisá tu email.",
-    "loginSubtitle": "{email} · {brand}"
+    "loginSubtitle": "{email} · {brand}",
+    "loginTitle": "Bienvenido de vuelta",
+    "loginSubtitleClean": "Accedé a tu workspace de gastos.",
+    "noAccount": "¿Todavía no tenés cuenta?",
+    "createOne": "Crear una"
   },
   "authHero": {
     "brand": "costo",
     "watermark": "expense",
     "headline": "Tracking de gastos para tu obra y tu vida diaria.",
     "subhead": "Multi-proyecto, multi-currency, compartible con tu pareja o familia. Pensado para el mundo real, no para el demo.",
-    "footer": "ARS · USD · ES · EN"
+    "footer": "ARS · USD · ES · EN",
+    "feature1": "Multi-currency ARS/USD con cotización snapshot por gasto.",
+    "feature2": "Workspace compartido con tu pareja o familia.",
+    "feature3": "Importá tu Excel existente en menos de un minuto."
   },
   "header": {
     "userMenu": "Menú de usuario",
@@ -140,7 +147,17 @@
     "fieldNotes": "Notas",
     "fieldEmpty": "—",
     "exportCsv": "Exportar CSV",
-    "exporting": "Generando…"
+    "exporting": "Generando…",
+    "fxDisclosureLabel": "Ajustar tipo de cambio",
+    "fxRateShort": "Tipo de cambio",
+    "datePillToday": "Hoy",
+    "datePillYesterday": "Ayer",
+    "noCategoriesTitle": "Necesitás una categoría primero",
+    "noCategoriesDescription": "Las categorías agrupan tus gastos (ej. Materiales, Mano de obra). Creá una para poder cargar tu primer gasto.",
+    "createCategoryCta": "Crear categoría",
+    "saveAndAddAnother": "Guardar y agregar otro",
+    "saveExpenseWithAmount": "Guardar gasto {amount}",
+    "descriptionPlaceholderRich": "Ej: Cemento para columnas"
   },
   "projects": {
     "title": "Proyectos",
@@ -412,7 +429,41 @@
     "projectsEmpty": "Creá un proyecto para empezar a trackear su progreso.",
     "legendMore": "+ {count} categorías más",
     "overBudget": "Sobre presupuesto",
-    "ofBudget": "del presupuesto"
+    "ofBudget": "del presupuesto",
+    "vsPrev": "vs. {amount} antes",
+    "noBaseline": "sin baseline",
+    "moversEmpty": "Sin movimientos significativos vs. período anterior.",
+    "topMovers": "Categorías que más cambiaron",
+    "forecastPill": "Proyectado",
+    "period": {
+      "label": "Período",
+      "month": "30 días",
+      "3m": "3 meses",
+      "6m": "6 meses",
+      "year": "1 año",
+      "all": "Todo"
+    },
+    "insights": {
+      "title": "Insights",
+      "categoryJump": "{name} subió {pct}% vs. período anterior.",
+      "vendorConcentration": "{name} concentra {pct}% del gasto del período.",
+      "forecast": "A este ritmo, fin de mes proyecta ~{projected}."
+    },
+    "alerts": {
+      "title": "Presupuestos al límite",
+      "near": "{pct}% {currency}",
+      "over": "Sobre {pct}% {currency}"
+    },
+    "quickAdd": {
+      "title": "Cargar gasto rápido",
+      "amount": "Monto",
+      "currency": "Moneda",
+      "category": "Categoría",
+      "add": "Agregar",
+      "saving": "Guardando…",
+      "moreOptions": "Más opciones"
+    },
+    "importExcel": "Importar desde Excel"
   },
   "confirm": {
     "cancel": "Cancelar",

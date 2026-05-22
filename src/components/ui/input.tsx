@@ -3,12 +3,9 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Mastercard-language input:
- *  - Pill-shaped (rounded-full) — kept as Mastercard signature even with productivity radii
- *  - White surface on cream canvas; Dust Taupe border at rest
- *  - Focus shifts border to Ink Black + crisp 2px ring
- *  - Body weight 450 (Mastercard's signature)
- *  - Pairs with Select trigger (also pill) and Badge (pill chip)
+ * Apple search-input grammar — pill (`{rounded.pill}`), 17px body type,
+ * 1px hairline border, ink-focus shift on focus. Matches Apple's
+ * accessories-search treatment.
  */
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
@@ -16,7 +13,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
       type={type}
       data-slot="input"
       className={cn(
-        'h-11 w-full min-w-0 rounded-full border border-input bg-secondary px-5 py-1 text-base [font-weight:450] transition-[border-color,box-shadow] outline-none',
+        'h-11 w-full min-w-0 rounded-full border border-input bg-card px-5 py-1 text-[17px] [font-weight:400] transition-[border-color,box-shadow] outline-none',
         'placeholder:text-muted-foreground',
         'selection:bg-foreground selection:text-background',
         'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:[font-weight:500] file:text-foreground',
