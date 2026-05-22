@@ -115,8 +115,10 @@ export default async function ExpensesPage({
         projects={projects.map((p) => ({ id: p.id, name: p.name }))}
       />
 
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <SearchInput />
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="min-w-[220px] flex-1 sm:max-w-md">
+          <SearchInput />
+        </div>
         <FilterBar
           categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
           vendors={vendors.map((v) => ({ id: v.id, name: v.name }))}

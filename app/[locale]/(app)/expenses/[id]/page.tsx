@@ -23,7 +23,10 @@ export default async function ExpenseDetailPage({
   if (!expense || expense.workspace_id !== workspace.id) notFound();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div
+      className="mx-auto max-w-2xl space-y-6"
+      style={{ viewTransitionName: `expense-${id}` }}
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">

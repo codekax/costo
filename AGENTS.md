@@ -31,6 +31,9 @@ Auto-load rules:
   Frontend design, production UI            -> frontend-design
   Any visual component                      -> ui-ux-pro-max
   Web a11y, design quality                  -> web-design-guidelines
+  Modern web APIs (dialog, popover,         -> modern-web-guidance (CLI: npx modern-web-guidance search/retrieve)
+    anchor positioning, container queries,
+    view transitions, CWV — LCP/INP, etc.)
   Postgres queries, schema, RLS             -> supabase-postgres-best-practices
   Zod validation at boundaries              -> zod
   Auth flows                                -> better-auth-best-practices (reference only — we use Supabase Auth)

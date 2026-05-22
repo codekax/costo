@@ -3,7 +3,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Tooltip as TooltipPrimitive } from 'radix-ui';
 import { useState, type ReactNode } from 'react';
+
+import { AriaInvalidSync } from '@/components/aria-invalid-sync';
 
 /**
  * App-level providers.
@@ -40,7 +43,12 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <NuqsAdapter>
-        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+        <QueryClientProvider client={client}>
+          <TooltipPrimitive.Provider delayDuration={150} skipDelayDuration={300}>
+            <AriaInvalidSync />
+            {children}
+          </TooltipPrimitive.Provider>
+        </QueryClientProvider>
       </NuqsAdapter>
     </ThemeProvider>
   );

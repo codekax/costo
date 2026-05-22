@@ -20,14 +20,14 @@ export function SearchInput({ placeholder }: { placeholder?: string }) {
   const ph = placeholder ?? t('searchPlaceholder');
 
   return (
-    <div className="relative w-full max-w-md">
-      <Search className="pointer-events-none absolute left-5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <div className="relative w-full">
+      <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="search"
         value={query}
         onChange={(e) => void setQuery(e.target.value)}
         placeholder={ph}
-        className="pl-12 pr-12"
+        className="pl-11 pr-11"
         aria-label={t('searchAria')}
       />
       {query && (
@@ -35,7 +35,7 @@ export function SearchInput({ placeholder }: { placeholder?: string }) {
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="absolute right-2 top-1/2 -translate-y-1/2"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2"
           onClick={() => void setQuery('')}
           aria-label={t('clearSearch')}
         >

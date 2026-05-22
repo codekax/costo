@@ -5,6 +5,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { createServerClient } from '@/lib/supabase/server';
 import { ProfileForm } from './profile-form';
 import { ThemeToggle } from '@/components/settings/theme-toggle';
+import { LanguagePicker } from '@/components/settings/language-picker';
 
 export default async function ProfilePage({
   params,
@@ -41,7 +42,6 @@ export default async function ProfilePage({
         <CardContent>
           <ProfileForm
             defaultName={meta.name ?? ''}
-            defaultLocale={(meta.locale as 'es' | 'en') ?? 'es'}
             defaultTimezone={meta.timezone ?? 'America/Argentina/Buenos_Aires'}
           />
         </CardContent>
@@ -49,10 +49,18 @@ export default async function ProfilePage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t('appearanceTitle')}</CardTitle>
-          <CardDescription>
-            {t('appearanceDescription')}
-          </CardDescription>
+          <CardTitle>{t('languageTitle')}</CardTitle>
+          <CardDescription>{t('languageDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LanguagePicker />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('appearanceTitle')}</CardTitle>
+          <CardDescription>{t('appearanceDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <ThemeToggle />

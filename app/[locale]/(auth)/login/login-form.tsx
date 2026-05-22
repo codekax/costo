@@ -83,8 +83,15 @@ export function LoginForm() {
                   id="email"
                   type="email"
                   autoComplete="email"
+                  required
+                  aria-invalid={passwordForm.formState.errors.email ? true : undefined}
                   {...passwordForm.register('email')}
                 />
+                {passwordForm.formState.errors.email?.message && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {passwordForm.formState.errors.email.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">{t('password')}</Label>
@@ -92,8 +99,15 @@ export function LoginForm() {
                   id="password"
                   type="password"
                   autoComplete="current-password"
+                  required
+                  aria-invalid={passwordForm.formState.errors.password ? true : undefined}
                   {...passwordForm.register('password')}
                 />
+                {passwordForm.formState.errors.password?.message && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {passwordForm.formState.errors.password.message}
+                  </p>
+                )}
               </div>
               <Button type="submit" disabled={pending} className="w-full">
                 {pending ? t('loggingIn') : t('signIn')}
@@ -128,8 +142,15 @@ export function LoginForm() {
                     id="email-magic"
                     type="email"
                     autoComplete="email"
+                    required
+                    aria-invalid={magicForm.formState.errors.email ? true : undefined}
                     {...magicForm.register('email')}
                   />
+                  {magicForm.formState.errors.email?.message && (
+                    <p className="text-sm text-destructive" role="alert">
+                      {magicForm.formState.errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <Button type="submit" disabled={pending} className="w-full">
                   {t('magicLink')}

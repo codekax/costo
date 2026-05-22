@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Standard top-of-page header. Replaces the
- * `<div className="flex items-center justify-between"><h1>…</h1>…</div>`
- * pattern duplicated across all (app) pages.
+ * iOS-style large title page header. Title scales from 28px (mobile) to
+ * 34px (desktop) following Apple HIG LargeTitle. Description uses
+ * secondaryLabel gray and 15px size — the canonical Settings/Mail subtitle.
  */
 export function PageHeader({
   title,
@@ -21,18 +21,16 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between',
+        'flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between',
         className,
       )}
     >
-      <div className="min-w-0 space-y-2">
-        {/* Mastercard H2 scale: 36px / weight 500 / -2% tracking — editorial section title.
-            Scales down on mobile so it doesn't dominate the viewport. */}
-        <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:leading-[1.18] sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">
+      <div className="min-w-0 space-y-1.5">
+        <h1 className="text-[28px] leading-[1.21] tracking-[-0.022em] [font-weight:700] sm:text-[34px]">
           {title}
         </h1>
         {description ? (
-          <div className="text-sm text-muted-foreground [font-weight:450] sm:text-base">
+          <div className="text-[15px] leading-[1.33] text-muted-foreground [font-weight:400]">
             {description}
           </div>
         ) : null}

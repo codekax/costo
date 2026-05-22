@@ -330,10 +330,11 @@
     "profileSectionDescription": "El nombre se muestra a otros miembros en workspaces compartidos.",
     "name": "Nombre",
     "language": "Idioma preferido",
-    "languageHint": "También podés cambiar idioma desde el ícono de globo arriba.",
     "timezone": "Zona horaria",
     "appearanceTitle": "Apariencia",
     "appearanceDescription": "Sistema sigue el modo del dispositivo automáticamente.",
+    "languageTitle": "Idioma",
+    "languageDescription": "Idioma usado en toda la interfaz.",
     "themeAria": "Tema",
     "themeLight": "Claro",
     "themeDark": "Oscuro",
@@ -408,7 +409,10 @@
     "donutEmpty": "Sin gastos en {currency} en los últimos 12 meses.",
     "monthlyEmpty": "Sin datos suficientes para graficar evolución mensual.",
     "vendorsEmpty": "Asigná proveedores a tus gastos para ver ranking.",
-    "projectsEmpty": "Creá un proyecto para empezar a trackear su progreso."
+    "projectsEmpty": "Creá un proyecto para empezar a trackear su progreso.",
+    "legendMore": "+ {count} categorías más",
+    "overBudget": "Sobre presupuesto",
+    "ofBudget": "del presupuesto"
   },
   "confirm": {
     "cancel": "Cancelar",

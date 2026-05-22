@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
       'lucide-react',
       'radix-ui',
       '@tanstack/react-query',
-      'recharts',
+      'd3',
       'date-fns',
       'date-fns-tz',
       'sonner',

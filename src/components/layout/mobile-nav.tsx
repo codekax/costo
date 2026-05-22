@@ -44,12 +44,18 @@ export function MobileNav({
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 p-0 bg-card">
-        <SheetHeader className="border-b border-border p-4">
+      <SheetContent side="left" className="w-[min(20rem,85vw)] bg-card p-0">
+        <SheetHeader
+          className="border-b border-border p-4"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1rem)' }}
+        >
           <SheetTitle className="sr-only">{t('navigation')}</SheetTitle>
           <WorkspaceSwitcher active={active} workspaces={workspaces} />
         </SheetHeader>
-        <div className="py-4">
+        <div
+          className="py-3"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)' }}
+        >
           <Sidebar />
         </div>
       </SheetContent>

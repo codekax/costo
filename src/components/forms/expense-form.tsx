@@ -144,8 +144,10 @@ export function ExpenseForm({
     },
   );
 
+  const errors = form.formState.errors;
+
   return (
-    <form onSubmit={form.handleSubmit(submit.run)} className="space-y-5">
+    <form onSubmit={form.handleSubmit(submit.run)} className="space-y-5" noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_120px]">
         <div className="space-y-2">
           <Label htmlFor="amount">{tExpenses('amount')}</Label>
@@ -153,11 +155,18 @@ export function ExpenseForm({
             id="amount"
             type="number"
             step="0.01"
-            min="0"
+            min="0.01"
+            required
             inputMode="decimal"
             autoFocus
+            aria-invalid={errors.amount ? true : undefined}
             {...form.register('amount', { valueAsNumber: true })}
           />
+          {errors.amount?.message && (
+            <p className="text-sm text-destructive" role="alert">
+              {String(errors.amount.message)}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="currency">{tExpenses('currency')}</Label>
@@ -188,8 +197,14 @@ export function ExpenseForm({
           type="number"
           step="0.000001"
           min="0"
+          aria-invalid={errors.fxRateUsed ? true : undefined}
           {...form.register('fxRateUsed', { valueAsNumber: true })}
         />
+        {errors.fxRateUsed?.message && (
+          <p className="text-sm text-destructive" role="alert">
+            {String(errors.fxRateUsed.message)}
+          </p>
+        )}
         {fxWarning && <p className="text-xs text-amber-600">{fxWarning}</p>}
         {equivalent && <p className="text-sm text-muted-foreground">{equivalent}</p>}
       </div>
@@ -197,7 +212,18 @@ export function ExpenseForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="paidAt">{tExpenses('date')}</Label>
-          <Input id="paidAt" type="date" {...form.register('paidAt')} />
+          <Input
+            id="paidAt"
+            type="date"
+            required
+            aria-invalid={errors.paidAt ? true : undefined}
+            {...form.register('paidAt')}
+          />
+          {errors.paidAt?.message && (
+            <p className="text-sm text-destructive" role="alert">
+              {String(errors.paidAt.message)}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="categoryId">{tExpenses('category')}</Label>

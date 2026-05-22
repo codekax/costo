@@ -14,16 +14,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { signOut } from '@/actions/auth/sign-out';
-import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import type { WorkspaceWithRole } from '@/lib/db/queries/workspaces';
 import { useTranslations } from 'next-intl';
 
 /**
- * Mastercard-language top header:
- *  - Sticky on cream-tinted blur — picks up the canvas warmth
- *  - Hairline border bottom on Dust Taupe
- *  - User menu trigger uses circular avatar (Mastercard's portrait vocabulary)
+ * iOS-style top bar:
+ *  - Sticky with backdrop blur (Apple Mail/Wallet header treatment)
+ *  - Hairline separator using iOS systemSeparator color
+ *  - User avatar as circular trigger for the account menu
  */
 export function Header({
   email,
@@ -39,13 +38,15 @@ export function Header({
   const t = useTranslations('header');
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-background/85 px-6 backdrop-blur-md lg:px-12">
+    <header
+      className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-background/85 px-4 backdrop-blur-md sm:px-6 lg:px-12"
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+    >
       <div className="flex items-center gap-3">
         <MobileNav active={workspace} workspaces={workspaces} />
-        <div className="text-base [font-weight:500] tracking-[-0.32px] lg:hidden">costo</div>
+        <div className="text-[17px] [font-weight:600] tracking-[-0.02em] lg:hidden">costo</div>
       </div>
       <div className="flex items-center gap-2">
-        <LanguageSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -59,7 +60,7 @@ export function Header({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-60">
-            <div className="px-3 py-2 text-xs text-muted-foreground [font-weight:450] truncate">
+            <div className="truncate px-3 py-2 text-xs text-muted-foreground">
               {email}
             </div>
             <DropdownMenuSeparator />

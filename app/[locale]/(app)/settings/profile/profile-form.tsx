@@ -35,11 +35,9 @@ const TIMEZONES = [
 
 export function ProfileForm({
   defaultName,
-  defaultLocale,
   defaultTimezone,
 }: {
   defaultName: string;
-  defaultLocale: 'es' | 'en';
   defaultTimezone: string;
 }) {
   const router = useRouter();
@@ -53,7 +51,6 @@ export function ProfileForm({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
       name: defaultName,
-      locale: defaultLocale,
       timezone: defaultTimezone,
     },
   });
@@ -75,25 +72,6 @@ export function ProfileForm({
       <div className="space-y-2">
         <Label htmlFor="name">{t('name')}</Label>
         <Input id="name" {...form.register('name')} />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="locale">{t('language')}</Label>
-        <Select
-          value={form.watch('locale') ?? 'es'}
-          onValueChange={(v) => form.setValue('locale', v as 'es' | 'en')}
-        >
-          <SelectTrigger id="locale">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="es">Español</SelectItem>
-            <SelectItem value="en">English</SelectItem>
-          </SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">
-          {t('languageHint')}
-        </p>
       </div>
 
       <div className="space-y-2">

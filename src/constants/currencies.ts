@@ -11,7 +11,7 @@ export const CURRENCY_LABEL: Record<Currency, string> = {
   USD: 'USD',
 };
 
-/** Lowercase variants used as recharts series keys. */
+/** Lowercase variants used as chart series keys. */
 export const CURRENCY_SERIES = {
   ars: 'ARS',
   usd: 'USD',

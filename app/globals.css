@@ -9,34 +9,32 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design language: Mastercard
+ * Design language: iOS / Apple HIG (Flighty-inspired)
  *
- * Light: Warm Canvas Cream (#F3F0EE) — never pure white. Ink Black (#141413)
- *        as primary CTA + headlines. Lifted Cream (#FCFBFA) for nested raised
- *        surfaces. Signal Orange (#CF4500) reserved for destructive/legal
- *        actions only (never marketing CTAs). Light Signal Orange (#F37338)
- *        only for orbital decorative arcs and chart accents.
+ * Light:  System gray canvas (#F2F2F7) — Apple's `systemGroupedBackground`.
+ *         Pure white cards elevated with very soft, diffuse shadows. Primary
+ *         action ink black (#0A0A0B). Status tints (emerald/amber/red/blue)
+ *         use the iOS system color hues with 10% surface tint + 700 text.
  *
- * Dark:  Ink Black (#141413) canvas with Canvas Cream (#F3F0EE) text — the
- *        Mastercard footer treatment elevated to full surface. Cream pills
- *        invert into primary CTA. Same restraint, same radius vocabulary.
+ * Dark:   Pure black canvas (#000) with elevated card stacks (#1C1C1E /
+ *         #2C2C2E) — the Apple "elevated" two-step grouping. Same status
+ *         tint vocabulary, brighter on dark.
  *
- * Border radius is trimodal: 6px (micro), 20px (CTA default), 40px
- *        (hero/stadium), 999px (pill — nav, chips, inputs). The 8–16px
- *        middle ground is intentionally absent.
+ * Border radius: 8px (micro/pills internals), 16px (chips), 24px (cards),
+ *         32px (large cards / sheets), 999px (pill — nav, chips, inputs).
+ *         Continuous-corner feel via larger radii than the visual eye expects.
  *
- * Body weight is 450. Display weight is 500. Headlines carry -2% tracking.
- * Eyebrow labels at 14px / 700 / +4% tracking, uppercase, with accent dot.
+ * Font stack: -apple-system / SF Pro first, falling back to Sofia Sans
+ *         Variable. On macOS/iOS this renders native SF Pro Display.
  *
- * Substitution: MarkForMC is proprietary; we use Sofia Sans Variable from
- * next/font/google — the open-source substitute Mastercard lists in its own
- * fallback stack. Variable wght axis exposes 450 and 500 directly.
+ * Text scale ratios mirror Apple HIG large-title / title-1 / title-2 / body.
  */
 
 @theme inline {
+  /* SF Pro on Apple platforms, Sofia Sans elsewhere, system-ui as ultimate fallback. */
   --font-sans:
-    var(--font-sofia-sans), system-ui, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+    var(--font-sofia-sans), system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --font-mono:
     ui-monospace, 'SF Mono', Menlo, Monaco, 'Cascadia Code', monospace;
 
@@ -68,131 +66,159 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /*
-   * Mastercard literal radius scale. The doc commits to either small (≤6px),
-   * medium-large (20–40px), or full-pill (999+). The middle ground 8–16px is
-   * intentionally absent — that's why the UI feels either "precise utility"
-   * or "soft editorial" with no in-between.
-   */
-  --radius-sm: 0.375rem; /* 6px — micro chips, decorative inline elements */
-  --radius-md: 1.25rem; /* 20px — primary/secondary CTA, body buttons */
-  --radius-lg: 1.5rem; /* 24px — consent/destructive pill, cards, popovers */
-  --radius-xl: 2.5rem; /* 40px — hero stadium frames, dialogs, large containers */
+  /* Status surfaces (iOS-style tinted backgrounds + labels). */
+  --color-status-success: var(--status-success);
+  --color-status-success-foreground: var(--status-success-foreground);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-foreground: var(--status-warning-foreground);
+  --color-status-danger: var(--status-danger);
+  --color-status-danger-foreground: var(--status-danger-foreground);
+  --color-status-info: var(--status-info);
+  --color-status-info-foreground: var(--status-info-foreground);
 
-  /* Atmospheric shadow scale — wide spread, low opacity. No hard drops. */
-  --shadow-sm: 0 4px 24px 0 rgba(0, 0, 0, 0.04); /* L1: floating nav pill */
-  --shadow-md: 0 24px 48px 0 rgba(0, 0, 0, 0.08); /* L2: hero / elevated cards */
-  --shadow-lg: 0 70px 110px 0 rgba(0, 0, 0, 0.25); /* L3: rare dramatic feature tile */
-  --shadow-soft: 0 24px 48px 0 rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 2px var(--ring);
+  /*
+   * iOS-feeling radius scale. Continuous-corner illusion via larger radii
+   * than the eye expects. `rounded-md` anchors at 16px (Apple chip);
+   * `rounded-lg` jumps to 24px (Apple card); `rounded-xl` to 32px
+   * (sheets / large containers).
+   */
+  --radius-sm: 0.5rem; /* 8px — micro chips, dense interior */
+  --radius-md: 1rem; /* 16px — chips, secondary buttons */
+  --radius-lg: 1.5rem; /* 24px — cards, popovers */
+  --radius-xl: 2rem; /* 32px — sheets, large cards */
+  --radius-2xl: 2.5rem; /* 40px — hero containers, dialogs */
+
+  /* iOS-style shadows — very diffuse, very low opacity, no hard drops. */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04), 0 1px 1px 0 rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 32px -8px rgba(15, 23, 42, 0.12), 0 6px 12px -6px rgba(15, 23, 42, 0.06);
+  --shadow-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.08);
+  --shadow-focus: 0 0 0 4px color-mix(in oklab, var(--ring) 25%, transparent);
 }
 
 :root {
-  /* Default radius — anchors `rounded-md` (Mastercard CTA default 20px) */
-  --radius: 1.25rem; /* 20px */
+  /* Default radius — anchors `rounded-md` (iOS chip 16px). */
+  --radius: 1rem;
 
-  /* Surfaces — warm putty cream canvas, never pure white */
-  --background: #f3f0ee; /* Canvas Cream */
-  --foreground: #141413; /* Ink Black — warm near-black */
+  /* iOS systemGroupedBackground — neutral cool gray, never pure white. */
+  --background: #f2f2f7;
+  --foreground: #0a0a0b; /* near-black, slight blue undertone */
 
-  --card: #fcfbfa; /* Lifted Cream — paper laid on paper */
-  --card-foreground: #141413;
-  --popover: #ffffff; /* White reserved for floating overlays */
-  --popover-foreground: #141413;
+  --card: #ffffff;
+  --card-foreground: #0a0a0b;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0b;
 
-  /* Primary CTA: Ink Black pill with Canvas Cream text — never pure white text */
-  --primary: #141413;
-  --primary-foreground: #f3f0ee;
+  /* Primary CTA: near-black pill (Apple's tinted button on light) */
+  --primary: #0a0a0b;
+  --primary-foreground: #ffffff;
 
-  /* Secondary: Outlined white pill with Ink text */
+  /* Secondary surface — white pill on gray bg */
   --secondary: #ffffff;
-  --secondary-foreground: #141413;
+  --secondary-foreground: #0a0a0b;
 
-  /* Muted: Soft Bone — cool-gray subregion */
-  --muted: #f4f4f4;
-  --muted-foreground: #696969; /* Slate Gray */
+  /* iOS systemGray6 fills (muted surfaces inside cards) */
+  --muted: #efeff4;
+  --muted-foreground: #6b6b73; /* iOS secondaryLabel */
 
-  /* Accent: Light Signal Orange — orbital arcs, chart accents, eyebrow dots only */
-  --accent: #f37338;
-  --accent-foreground: #141413;
+  /* Accent: iOS blue — used for links, focused states, info chips */
+  --accent: #0a84ff;
+  --accent-foreground: #ffffff;
 
-  /* Destructive: Signal Orange — Mastercard's consent/legal color, mapped to danger here */
-  --destructive: #cf4500;
+  /* Destructive: iOS systemRed */
+  --destructive: #ff3b30;
   --destructive-foreground: #ffffff;
 
-  /* Success: subdued green that respects the warm palette */
-  --success: #4f7a5b;
+  /* Success: iOS systemGreen */
+  --success: #34c759;
 
-  /* Hairlines: warm taupe-tinted border, low contrast on cream */
-  --border: #d1cdc7; /* Dust Taupe */
-  --input: #d1cdc7;
+  /* Hairlines — iOS separator color (slightly transparent gray) */
+  --border: #e5e5ea;
+  --input: #d8d8dd;
 
-  /* Focus ring: Ink Black — crisp and unmistakable */
-  --ring: #141413;
+  /* Focus ring: iOS blue (matches accent) */
+  --ring: #0a84ff;
 
-  /* Inline link: deep dusty blue, saturated enough without being neon */
-  --link: #3860be;
+  /* Inline link: iOS blue */
+  --link: #0a84ff;
 
-  /* Ghost watermark cream-on-cream for editorial section headlines */
-  --ghost: #e8e2da;
+  /* Ghost watermark (rarely used) */
+  --ghost: #e5e5ea;
 
-  /* Charts: anchored on Ink + Signal Orange family. No saturated rainbow. */
-  --chart-1: #141413; /* Ink Black */
-  --chart-2: #cf4500; /* Signal Orange */
-  --chart-3: #f37338; /* Light Signal Orange */
-  --chart-4: #9a3a0a; /* Clay Brown */
-  --chart-5: #696969; /* Slate Gray */
+  /* iOS status colors — used by Badge variants + ProjectProgressList */
+  --status-success: #e9f9ee; /* tint */
+  --status-success-foreground: #1f7a3a;
+  --status-warning: #fff4e5;
+  --status-warning-foreground: #aa5d00;
+  --status-danger: #ffe7e5;
+  --status-danger-foreground: #c4291c;
+  --status-info: #e6f1ff;
+  --status-info-foreground: #0050b8;
+
+  /* Charts — Apple system palette: blue, orange, green, purple, gray */
+  --chart-1: #0a84ff;
+  --chart-2: #ff9500;
+  --chart-3: #34c759;
+  --chart-4: #af52de;
+  --chart-5: #8e8e93;
 }
 
 .dark {
   /*
-   * Dark = Ink Black canvas with Canvas Cream text. This is the Mastercard
-   * footer treatment elevated to full surface. The doc doesn't define dark
-   * directly — we extend its vocabulary: ink replaces cream, cream replaces ink.
+   * Dark = iOS dark mode. Pure black canvas with two-step elevated grouping
+   * (Apple's `systemBackground` → `secondarySystemBackground`).
    */
-  --background: #141413;
-  --foreground: #f3f0ee;
+  --background: #000000;
+  --foreground: #ffffff;
 
-  --card: #1f1e1d; /* Lifted Ink — one step up from canvas */
-  --card-foreground: #f3f0ee;
-  --popover: #1f1e1d;
-  --popover-foreground: #f3f0ee;
+  --card: #1c1c1e; /* iOS secondarySystemBackground */
+  --card-foreground: #ffffff;
+  --popover: #2c2c2e; /* iOS tertiarySystemBackground — elevated above cards */
+  --popover-foreground: #ffffff;
 
-  /* On dark, Cream becomes the primary CTA pill with Ink text */
-  --primary: #f3f0ee;
-  --primary-foreground: #141413;
+  /* On dark, white becomes the primary CTA pill */
+  --primary: #ffffff;
+  --primary-foreground: #0a0a0b;
 
-  /* Secondary: outlined ink pill with cream text */
-  --secondary: #1f1e1d;
-  --secondary-foreground: #f3f0ee;
+  --secondary: #1c1c1e;
+  --secondary-foreground: #ffffff;
 
-  --muted: #262627; /* Charcoal */
-  --muted-foreground: rgba(243, 240, 238, 0.7);
+  --muted: #1c1c1e;
+  --muted-foreground: #98989f; /* iOS secondaryLabel on dark */
 
-  --accent: #f37338;
-  --accent-foreground: #141413;
+  /* iOS blue holds vibrancy on dark */
+  --accent: #0a84ff;
+  --accent-foreground: #ffffff;
 
-  /* Signal Orange holds on dark — high enough chroma */
-  --destructive: #cf4500;
+  --destructive: #ff453a;
   --destructive-foreground: #ffffff;
 
-  --success: #a8c5b0;
+  --success: #30d158;
 
-  /* Translucent cream borders — ghostly containment on ink */
-  --border: rgba(243, 240, 238, 0.15);
-  --input: rgba(243, 240, 238, 0.15);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.18);
 
-  --ring: #f3f0ee;
+  --ring: #0a84ff;
 
-  --link: #8aa9f0;
+  --link: #0a84ff;
 
-  --ghost: #1f1e1d;
+  --ghost: #1c1c1e;
 
-  --chart-1: #f3f0ee;
-  --chart-2: #f37338;
-  --chart-3: #cf4500;
-  --chart-4: #d1cdc7;
-  --chart-5: rgba(243, 240, 238, 0.6);
+  /* Status colors on dark — keep the same hues, deepen the surface */
+  --status-success: rgba(48, 209, 88, 0.18);
+  --status-success-foreground: #6fe198;
+  --status-warning: rgba(255, 149, 0, 0.18);
+  --status-warning-foreground: #ffb763;
+  --status-danger: rgba(255, 69, 58, 0.2);
+  --status-danger-foreground: #ff8a82;
+  --status-info: rgba(10, 132, 255, 0.18);
+  --status-info-foreground: #6bb5ff;
+
+  --chart-1: #0a84ff;
+  --chart-2: #ff9f0a;
+  --chart-3: #30d158;
+  --chart-4: #bf5af2;
+  --chart-5: #98989f;
 }
 
 @layer base {
@@ -209,47 +235,67 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    /* Body weight 450 — Mastercard's signature half-step weight, softer than 500. */
-    font-weight: 450;
-    font-size: 16px;
-    line-height: 1.4;
-    letter-spacing: 0;
+    /* iOS body — 17/22 with SF Pro Text optical sizing. Weight 400 default. */
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.41;
+    letter-spacing: -0.022em; /* SF-style optical tightening */
   }
 
   /*
-   * Headlines: weight 500 with -2% tracking. Line-height ratio drops with size:
-   * H1 = 1:1, H2 = 1.22, H3 = 1.2. Tight display, comfortable reading.
+   * iOS HIG type scale:
+   *   LargeTitle 34/41 weight 700, -0.022em
+   *   Title1     28/34 weight 700, -0.022em
+   *   Title2     22/28 weight 600, -0.022em
+   *   Title3     20/25 weight 600, -0.020em
    */
   h1 {
     font-family: var(--font-sans);
-    font-size: 64px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -1.28px; /* -2% */
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.21;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
   }
 
   h2 {
     font-family: var(--font-sans);
-    font-size: 36px;
-    font-weight: 500;
-    line-height: 1.22;
-    letter-spacing: -0.72px; /* -2% */
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.21;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
   }
 
   h3 {
     font-family: var(--font-sans);
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.48px; /* -2% */
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.27;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
   }
 
   h4 {
     font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: 0;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.29;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /*
+   * Body copy and list items: pretty wrapping prevents orphan words (runts)
+   * on the last line. Baseline limited (Chromium + Safari 26), gracefully
+   * degrades to default wrap. Excluded from globals on perf-critical lists
+   * — applied here scoped to text containers only.
+   */
+  p,
+  blockquote,
+  li,
+  dd {
+    text-wrap: pretty;
   }
 
   /* Tabular numerals for currency/amount cells */
@@ -257,24 +303,145 @@
     font-feature-settings: 'tnum' on;
     font-variant-numeric: tabular-nums;
   }
+
+  /*
+   * Autofill harmonization. Chrome paints autofilled inputs with its own
+   * yellow/blue background that overrides our cream surface. We override via
+   * `box-shadow: inset` because `background-color` is locked on autofill.
+   * Multiple state indicators (border + ring) so we don't rely on color alone.
+   */
+  input:autofill,
+  input:-webkit-autofill,
+  textarea:autofill,
+  textarea:-webkit-autofill,
+  select:autofill,
+  select:-webkit-autofill {
+    box-shadow: 0 0 0 100vmax var(--secondary) inset;
+    -webkit-text-fill-color: var(--foreground);
+    border-color: var(--ring);
+    caret-color: var(--foreground);
+    transition: background-color 600000s 0s; /* delay chrome's bg paint indefinitely */
+  }
+
+  input:autofill:focus-visible,
+  input:-webkit-autofill:focus-visible,
+  textarea:autofill:focus-visible,
+  textarea:-webkit-autofill:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /*
+   * Post-interaction validation. CSS-only — applies once the user has
+   * blurred a control with invalid value (or submitted the form). The
+   * `aria-invalid` sync is handled by <AriaInvalidSync /> mounted in
+   * <Providers> so screen readers stay aligned with the visual state.
+   * Scope: forms only (not search inputs, filter date pickers).
+   */
+  form input:user-invalid,
+  form textarea:user-invalid,
+  form select:user-invalid {
+    border-color: var(--destructive);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--destructive) 20%, transparent);
+  }
+
+  /*
+   * Cross-document View Transitions. Native morph between routes on App
+   * Router navigations. Falls back to a no-op outside Chromium / Safari TP.
+   * Individual elements opt in by setting `view-transition-name`.
+   */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 220ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 1ms;
+    }
+  }
+}
+
+@layer utilities {
+  /*
+   * Defer offscreen rendering. Use on rows of long lists and below-the-fold
+   * cards. `contain-intrinsic-size` is MANDATORY per the modern-web guide —
+   * without it the browser collapses to 0px and the scrollbar jumps.
+   */
+  .cv-row {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 80px;
+  }
+
+  .cv-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
+
+  .cv-chart-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 420px;
+  }
+
+  /*
+   * Scroll-driven reveal. Cards fade + lift in as the user scrolls them
+   * into the scrollport. Linear / editorial feel. Progressive enhancement —
+   * the @supports gate makes sure non-supporting browsers see fully-rendered
+   * cards instead of permanently hidden ones.
+   */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: reveal-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+      }
+    }
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /*
+   * Wise-style growing numeric input. Width follows content between bounds.
+   * Limited availability (Chrome 123, Safari 26). Falls back to fixed width.
+   */
+  .field-sizing-content {
+    field-sizing: content;
+    min-inline-size: 4ch;
+    max-inline-size: 100%;
+  }
 }
 
 @layer components {
   /*
-   * Eyebrow label — Mastercard's signature section-category signal.
-   * 14px / 700 / +4% tracking / uppercase, paired with a small accent dot.
-   * Apply to a <span>: <span className="eyebrow"><span className="eyebrow-dot" /> SERVICES</span>
+   * iOS footnote/eyebrow — used for small uppercase labels above values
+   * (e.g. "ARS" above the dashboard total). 11/13 with wider tracking.
    */
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.56px; /* +4% */
+    gap: 0.375rem;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--foreground);
+    color: var(--muted-foreground);
   }
 
   .eyebrow-dot {
@@ -282,41 +449,33 @@
     width: 6px;
     height: 6px;
     border-radius: 9999px;
-    background-color: var(--accent); /* Light Signal Orange */
+    background-color: var(--accent);
   }
 
   /*
-   * Ghost watermark — cream-on-cream display text layered behind portraits.
-   * Use in editorial sections (auth, error, dashboard hero) only.
-   */
-  .ghost-watermark {
-    color: var(--ghost);
-    font-size: clamp(48px, 8vw, 128px);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -2.56px; /* -2% */
-    user-select: none;
-    pointer-events: none;
-  }
-
-  /*
-   * Hero stadium — full-bleed media frame with the iconic 40px radius.
-   * Sits directly on canvas with no shadow.
-   */
-  .hero-stadium {
-    border-radius: 2.5rem; /* 40px */
-    overflow: hidden;
-    background-color: #000000;
-  }
-
-  /*
-   * Hero gradient — rare dramatic surface (auth hero, marketing).
-   * Uses the dark-ink + warm undertone palette.
+   * Hero gradient (auth screens) — dark iOS-feel. Subtle radial layers,
+   * mostly-black with deep neutral lift in corners.
    */
   .hero-gradient {
     background:
-      radial-gradient(circle at 20% 0%, #2b2b2b 0%, transparent 60%),
-      radial-gradient(circle at 80% 100%, #0a0a0a 0%, transparent 55%),
-      linear-gradient(180deg, #141413 0%, #0a0a0a 100%);
+      radial-gradient(circle at 20% 0%, #1c1c1e 0%, transparent 60%),
+      radial-gradient(circle at 80% 100%, #000000 0%, transparent 55%),
+      linear-gradient(180deg, #0a0a0b 0%, #000000 100%);
+  }
+
+  /*
+   * iOS-style group container — used for stacked rows like Settings.
+   * White rounded card with light separator lines between rows.
+   */
+  .ios-group {
+    background-color: var(--card);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .ios-group > * + * {
+    border-top: 1px solid var(--border);
   }
 }

@@ -26,14 +26,9 @@ import { getWorkspaceTotals } from '@/lib/db/queries/expenses';
 import { formatCurrency } from '@/utils/format';
 
 /**
- * Charts use recharts (~60KB). They're declared as `'use client'` components,
- * which Next.js already extracts into separate client chunks during the build.
- * Combined with `optimizePackageImports: ['recharts']` in next.config.ts,
- * this gives us bundle splitting without the `dynamic()` ergonomic cost.
- *
- * (Tried `dynamic({ ssr: false })` — Next 15 forbids it inside Server Components.
- * Wrapping each chart in a client wrapper just to call `dynamic()` is more
- * boilerplate than it's worth at this scale.)
+ * All dashboard charts are RSC. SVG is rendered on the server with d3
+ * (scaleLinear/pie/arc/line) and the only client island is the hover
+ * tooltip helper at src/components/charts/_client-tooltip.tsx.
  */
 
 export default async function DashboardPage({
@@ -90,7 +85,7 @@ export default async function DashboardPage({
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <Card>
+            <Card className="reveal cv-chart-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('byCategory')}</CardTitle>
                 <CardDescription>{t('last12Months')}</CardDescription>
@@ -111,7 +106,7 @@ export default async function DashboardPage({
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="reveal cv-chart-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('monthlyTitle')}</CardTitle>
                 <CardDescription>{t('monthlyDescription')}</CardDescription>
@@ -123,7 +118,7 @@ export default async function DashboardPage({
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-            <Card>
+            <Card className="reveal cv-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('activeProjects')}</CardTitle>
               </CardHeader>
@@ -132,7 +127,7 @@ export default async function DashboardPage({
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="reveal cv-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('topVendors')}</CardTitle>
                 <CardDescription>{t('topVendorsDescription')}</CardDescription>
@@ -143,7 +138,7 @@ export default async function DashboardPage({
             </Card>
           </div>
 
-          <Card>
+          <Card className="reveal cv-card">
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
@@ -176,11 +171,19 @@ function TotalCard({
 }) {
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
+      <CardContent className="space-y-1">
+        <p className="eyebrow">
+          <span
+            className="eyebrow-dot"
+            style={{
+              backgroundColor:
+                currency === 'ARS' ? 'var(--chart-1)' : 'var(--chart-2)',
+            }}
+            aria-hidden
+          />
+          {label}
+        </p>
+        <p className="truncate text-[28px] tabular-nums tracking-[-0.022em] [font-weight:700] leading-[1.18] sm:text-[34px]">
           {formatCurrency(amount, currency)}
         </p>
       </CardContent>

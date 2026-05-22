@@ -50,14 +50,37 @@ export function SignupForm() {
         <CardDescription>{t('signupHint')}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div className="space-y-2">
             <Label htmlFor="name">{t('nameOptional')}</Label>
-            <Input id="name" type="text" autoComplete="name" {...form.register('name')} />
+            <Input
+              id="name"
+              type="text"
+              autoComplete="name"
+              aria-invalid={form.formState.errors.name ? true : undefined}
+              {...form.register('name')}
+            />
+            {form.formState.errors.name?.message && (
+              <p className="text-sm text-destructive" role="alert">
+                {form.formState.errors.name.message}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">{t('email')}</Label>
-            <Input id="email" type="email" autoComplete="email" {...form.register('email')} />
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              aria-invalid={form.formState.errors.email ? true : undefined}
+              {...form.register('email')}
+            />
+            {form.formState.errors.email?.message && (
+              <p className="text-sm text-destructive" role="alert">
+                {form.formState.errors.email.message}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t('password')}</Label>
@@ -65,9 +88,19 @@ export function SignupForm() {
               id="password"
               type="password"
               autoComplete="new-password"
+              required
+              aria-describedby="password-hint"
+              aria-invalid={form.formState.errors.password ? true : undefined}
               {...form.register('password')}
             />
-            <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
+            <p id="password-hint" className="text-xs text-muted-foreground">
+              {t('passwordHint')}
+            </p>
+            {form.formState.errors.password?.message && (
+              <p className="text-sm text-destructive" role="alert">
+                {form.formState.errors.password.message}
+              </p>
+            )}
           </div>
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? '…' : t('signUp')}

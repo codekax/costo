@@ -50,12 +50,18 @@ export function FilterBar({
       {/* Date range */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant={filters.from || filters.to ? 'default' : 'outline'} size="sm">
-            <CalendarRange className="mr-1 size-4" />
-            {filters.from || filters.to
-              ? `${fromIso || '…'} → ${toIso || '…'}`
-              : t('dateRange')}
-          </Button>
+          <button
+            type="button"
+            className={pillClass(Boolean(filters.from || filters.to))}
+            aria-label={t('dateRange')}
+          >
+            <CalendarRange className="size-4 shrink-0" aria-hidden />
+            <span className="truncate">
+              {filters.from || filters.to
+                ? `${fromIso || '…'} → ${toIso || '…'}`
+                : t('dateRange')}
+            </span>
+          </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-72 space-y-3">
           <div className="space-y-2">
@@ -97,7 +103,7 @@ export function FilterBar({
       <FilterPill
         active={!!filters.category}
         label={categoryName ?? t('category')}
-        icon={<Tag className="mr-1 size-4" />}
+        icon={<Tag className="size-4" />}
         onClear={() => void setFilters({ category: '' })}
       >
         <Select
@@ -130,7 +136,7 @@ export function FilterBar({
       <FilterPill
         active={!!filters.vendor}
         label={vendorName ?? t('vendor')}
-        icon={<Users className="mr-1 size-4" />}
+        icon={<Users className="size-4" />}
         onClear={() => void setFilters({ vendor: '' })}
       >
         <Select
@@ -155,7 +161,7 @@ export function FilterBar({
       <FilterPill
         active={!!filters.currency}
         label={filters.currency ?? t('currency')}
-        icon={<Coins className="mr-1 size-4" />}
+        icon={<Coins className="size-4" />}
         onClear={() => void setFilters({ currency: null })}
       >
         <Select
@@ -176,9 +182,8 @@ export function FilterBar({
       </FilterPill>
 
       {activeCount > 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
+          type="button"
           onClick={() =>
             void setFilters({
               category: '',
@@ -188,15 +193,31 @@ export function FilterBar({
               to: null,
             })
           }
+          className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] [font-weight:500] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:h-8 sm:text-xs"
         >
           {t('clearAll')}
-          <Badge variant="secondary" className="ml-2 px-1.5">
+          <Badge variant="secondary" className="px-1.5">
             {activeCount}
           </Badge>
-        </Button>
+        </button>
       )}
     </div>
   );
+}
+
+/**
+ * Shared pill style for trigger + clear-all buttons. iOS toolbar pill look:
+ * hairline border at rest, tinted accent surface when active, slightly
+ * taller on mobile (36px touch target) than desktop (32px) to satisfy HIG.
+ */
+function pillClass(active: boolean): string {
+  return [
+    'inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] [font-weight:500] transition-colors',
+    'sm:h-8 sm:text-xs',
+    active
+      ? 'border-accent/30 bg-status-info text-status-info-foreground'
+      : 'border-border bg-card text-foreground hover:bg-muted',
+  ].join(' ');
 }
 
 function FilterPill({
@@ -217,26 +238,24 @@ function FilterPill({
     <div className="inline-flex items-center">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant={active ? 'default' : 'outline'} size="sm">
-            {icon}
-            {label}
-          </Button>
+          <button type="button" className={pillClass(active)} aria-label={label}>
+            <span className="contents [&_svg]:size-4 [&_svg]:shrink-0">{icon}</span>
+            <span className="truncate">{label}</span>
+          </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-64">
           {children}
         </PopoverContent>
       </Popover>
       {active && (
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-1 size-7"
           onClick={onClear}
           aria-label={t('clearLabel', { label })}
+          className="ml-1 inline-flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <X className="size-3" />
-        </Button>
+        </button>
       )}
     </div>
   );
