@@ -26,12 +26,12 @@ export default function AppError({
           <AlertCircle className="size-9 text-destructive" />
         </div>
         <div className="max-w-md space-y-2">
-          <p className="text-3xl tracking-[-0.6px] [font-weight:500]">{t('title')}</p>
-          <p className="text-base text-muted-foreground [font-weight:450]">
+          <p className="text-3xl tracking-[-0.6px] [font-weight:510]">{t('title')}</p>
+          <p className="text-base text-muted-foreground [font-weight:400]">
             {error.message || t('fallback')}
           </p>
           {error.digest && (
-            <p className="text-xs text-muted-foreground [font-weight:450]">
+            <p className="text-xs text-muted-foreground [font-weight:400]">
               {t('ref', { digest: error.digest })}
             </p>
           )}

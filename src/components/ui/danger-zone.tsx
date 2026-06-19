@@ -28,7 +28,7 @@ export function DangerZone({
   return (
     <Card className={cn('border-destructive/40 bg-destructive/[0.03]', className)}>
       <CardHeader>
-        <CardTitle className="text-xl tracking-[-0.4px] text-destructive [font-weight:500]">
+        <CardTitle className="text-xl tracking-[-0.4px] text-destructive [font-weight:510]">
           {title}
         </CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}
@@ -50,9 +50,9 @@ export function DangerActionRow({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="text-base">
-        <p className="[font-weight:500]">{title}</p>
+        <p className="[font-weight:510]">{title}</p>
         {description ? (
-          <p className="text-sm text-muted-foreground [font-weight:450]">{description}</p>
+          <p className="text-sm text-muted-foreground [font-weight:400]">{description}</p>
         ) : null}
       </div>
       {action}

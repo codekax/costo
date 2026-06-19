@@ -1,7 +1,23 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+import withSerwistInit from '@serwist/next';
 import type { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/config.ts');
+
+/**
+ * Serwist compiles `app/sw.ts` → `public/sw.js` and auto-registers it, which
+ * is what makes the app installable as a desktop/standalone PWA.
+ *
+ * Disabled in dev: the SW in `next dev` triggers Next 15's
+ * `clientReferenceManifest` invariant (500s on some routes). The PWA install
+ * is a production feature — test it with `pnpm build && pnpm start`.
+ */
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV === 'development',
+});
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -37,4 +53,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withSerwist(withNextIntl(nextConfig));

@@ -49,7 +49,7 @@ export async function BudgetAlerts({ projects }: { projects: ProjectWithTotals[]
       </span>
       <div className="min-w-0 flex-1 space-y-1.5">
         <p className="eyebrow !text-destructive">{t('title')}</p>
-        <ul className="space-y-1 text-sm [font-weight:450]">
+        <ul className="space-y-1 text-sm [font-weight:400]">
           {flagged.map(({ project, ratio, currency }) => {
             const over = ratio > 1;
             return (
@@ -63,7 +63,7 @@ export async function BudgetAlerts({ projects }: { projects: ProjectWithTotals[]
                 <span
                   className={cn(
                     'shrink-0 tabular-nums text-xs',
-                    over ? 'text-destructive [font-weight:500]' : 'text-muted-foreground',
+                    over ? 'text-destructive [font-weight:510]' : 'text-muted-foreground',
                   )}
                 >
                   {over

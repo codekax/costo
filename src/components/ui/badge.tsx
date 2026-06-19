@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
  *   ghost / link / eyebrow → text-only variants
  */
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-transparent px-2.5 py-0.5 text-[11px] leading-none [font-weight:600] tracking-[-0.01em] whitespace-nowrap transition-[color,background-color,box-shadow] focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&>svg]:pointer-events-none [&>svg]:size-3",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border border-transparent px-2.5 py-0.5 text-[11px] leading-none [font-weight:590] tracking-[-0.01em] whitespace-nowrap transition-[color,background-color,box-shadow] focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
@@ -34,7 +34,7 @@ const badgeVariants = cva(
         ghost: 'bg-transparent text-foreground [a&]:hover:bg-foreground/5',
         link: 'text-link underline-offset-4 [a&]:hover:underline',
         eyebrow:
-          'bg-transparent text-muted-foreground border-0 px-0 text-[11px] [font-weight:600] uppercase tracking-[0.04em]',
+          'bg-transparent text-muted-foreground border-0 px-0 text-[11px] [font-weight:590] uppercase tracking-[0.04em]',
       },
     },
     defaultVariants: {

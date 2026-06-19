@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { ProjectEditForm } from '@/components/forms/project-edit-form';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjectById } from '@/lib/db/queries/projects';
@@ -26,7 +26,7 @@ export default async function EditProjectPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title={t('editProject')} description={project.name} />
+      <PageTitle>{t('editProject')}</PageTitle>
       <Card>
         <CardHeader>
           <CardTitle>{t('formCardTitle')}</CardTitle>

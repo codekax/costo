@@ -1,7 +1,6 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getVendors } from '@/lib/db/queries/vendors';
 
@@ -20,19 +19,9 @@ export default async function VendorsPage({
   const vendors = await getVendors(supabase, workspace.id);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={t('pageDescription')}
-      />
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('listTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <VendorsList workspaceId={workspace.id} vendors={vendors} />
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      <PageTitle>{t('title')}</PageTitle>
+      <VendorsList workspaceId={workspace.id} vendors={vendors} />
     </div>
   );
 }

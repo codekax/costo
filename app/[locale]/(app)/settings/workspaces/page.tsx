@@ -3,7 +3,7 @@ import { setRequestLocale, getTranslations, getLocale } from 'next-intl/server';
 import { Users2, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { createServerClient } from '@/lib/supabase/server';
 import { getCurrentUserWorkspaces } from '@/lib/db/queries/workspaces';
 import { CreateWorkspaceDialog } from './create-workspace-dialog';
@@ -23,11 +23,11 @@ export default async function WorkspacesSettingsPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={t('description')}
-        actions={<CreateWorkspaceDialog />}
-      />
+      <PageTitle>{t('title')}</PageTitle>
+
+      <div className="flex justify-end">
+        <CreateWorkspaceDialog />
+      </div>
 
       <div className="grid gap-3">
         {workspaces.map((ws) => (

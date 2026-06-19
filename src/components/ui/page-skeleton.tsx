@@ -13,33 +13,38 @@ import { cn } from '@/lib/utils';
  */
 export function PageSkeleton({
   actions = 1,
+  title = true,
   description = true,
   children,
   className,
 }: {
   actions?: number;
+  /** The screen title now lives in the top bar, so content skeletons set this
+   *  false. Kept true by default for any skeleton that still has a heading. */
+  title?: boolean;
   description?: boolean;
   children?: React.ReactNode;
   className?: string;
 }) {
   return (
     <div className={cn('space-y-6', className)}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-9 w-44 sm:h-10 sm:w-56" />
-          {description ? <Skeleton className="h-4 w-56 sm:w-72" /> : null}
+      {title || actions > 0 ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          {title ? (
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-40 sm:w-52" />
+              {description ? <Skeleton className="h-4 w-56 sm:w-72" /> : null}
+            </div>
+          ) : null}
+          {actions > 0 ? (
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              {Array.from({ length: actions }).map((_, i) => (
+                <Skeleton key={i} className="h-8 w-28 rounded-full sm:w-32" />
+              ))}
+            </div>
+          ) : null}
         </div>
-        {actions > 0 ? (
-          <div className="flex flex-wrap items-center gap-2">
-            {Array.from({ length: actions }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="h-11 w-32 rounded-full sm:w-36"
-              />
-            ))}
-          </div>
-        ) : null}
-      </div>
+      ) : null}
       {children}
     </div>
   );
@@ -67,11 +72,11 @@ export function ListSkeleton({
 
 /**
  * Card grid — for project / vendor / category tiles. Matches Card primitive
- * (rounded-[18px]).
+ * (rounded-lg).
  */
 export function GridSkeleton({
   count = 6,
-  cardClassName = 'h-56 rounded-[18px]',
+  cardClassName = 'h-56 rounded-lg',
   cols = 'sm:grid-cols-2 lg:grid-cols-3',
 }: {
   count?: number;

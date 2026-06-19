@@ -3,9 +3,8 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * iOS-style large title page header. Title scales from 28px (mobile) to
- * 34px (desktop) following Apple HIG LargeTitle. Description uses
- * secondaryLabel gray and 15px size — the canonical Settings/Mail subtitle.
+ * Linear-style page header. Title is the Linear title-3 (20→24px, weight 590,
+ * -0.012em) — never the 700 large-title of iOS. Description is 13px tertiary.
  */
 export function PageHeader({
   title,
@@ -26,11 +25,11 @@ export function PageHeader({
       )}
     >
       <div className="min-w-0 space-y-1.5">
-        <h1 className="text-[28px] leading-[1.21] tracking-[-0.022em] [font-weight:700] sm:text-[34px]">
+        <h1 className="text-[20px] leading-[1.33] tracking-[-0.012em] [font-weight:590] sm:text-[24px]">
           {title}
         </h1>
         {description ? (
-          <div className="text-[15px] leading-[1.33] text-muted-foreground [font-weight:400]">
+          <div className="text-[13px] leading-[1.5] text-muted-foreground [font-weight:400]">
             {description}
           </div>
         ) : null}

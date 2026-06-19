@@ -68,7 +68,7 @@ export function VendorCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between [font-weight:450]"
+          className="w-full justify-between [font-weight:400]"
         >
           <span className="truncate">{selected ? selected.name : tVendors('noVendor')}</span>
           <ChevronDown className="size-4 opacity-50" aria-hidden />

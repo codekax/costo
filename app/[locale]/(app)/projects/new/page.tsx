@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { ProjectForm } from '@/components/forms/project-form';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjectTypes } from '@/lib/db/queries/project-types';
@@ -19,10 +19,7 @@ export default async function NewProjectPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader
-        title={t('newProject')}
-        description={t('newPageDescription', { workspace: workspace.name })}
-      />
+      <PageTitle>{t('newProject')}</PageTitle>
       <Card>
         <CardHeader>
           <CardTitle>{t('formCardTitle')}</CardTitle>

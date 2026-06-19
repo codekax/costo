@@ -5,7 +5,7 @@ import { Plus, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { ExpenseForm } from '@/components/forms/expense-form';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjects } from '@/lib/db/queries/projects';
@@ -32,10 +32,7 @@ export default async function NewExpensePage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader
-        title={t('newExpense')}
-        description={t('newPageDescription', { workspace: workspace.name })}
-      />
+      <PageTitle>{t('newExpense')}</PageTitle>
       {categories.length === 0 ? (
         <EmptyState
           icon={Tag}

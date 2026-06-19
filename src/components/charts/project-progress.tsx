@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
+import { ListEmpty } from '@/components/ui/list-empty';
 import { formatCurrency } from '@/utils/format';
 import { cn } from '@/lib/utils';
 import type { ProjectWithTotals } from '@/lib/db/queries/projects';
@@ -21,9 +22,7 @@ export function ProjectProgressList({ projects }: { projects: ProjectWithTotals[
   const tProjects = useTranslations('projects');
 
   if (projects.length === 0) {
-    return (
-      <p className="py-8 text-center text-sm text-muted-foreground">{t('projectsEmpty')}</p>
-    );
+    return <ListEmpty>{t('projectsEmpty')}</ListEmpty>;
   }
 
   return (
@@ -44,7 +43,7 @@ export function ProjectProgressList({ projects }: { projects: ProjectWithTotals[
             <Link href={`/projects/${p.id}`} className="group block space-y-2">
               <div className="flex items-baseline justify-between gap-3">
                 <div className="flex min-w-0 items-baseline gap-2">
-                  <span className="truncate text-sm [font-weight:500] tracking-[-0.32px] group-hover:underline">
+                  <span className="truncate text-sm [font-weight:510] tracking-[-0.32px] group-hover:underline">
                     {p.name}
                   </span>
                   {isOver && (
@@ -115,7 +114,7 @@ function BudgetRow({
           <span className="uppercase tracking-wide">{label}</span>
           <span
             className={cn(
-              'tabular-nums [font-weight:500]',
+              'tabular-nums [font-weight:510]',
               isOver ? 'text-destructive' : isNear ? 'text-foreground' : 'text-muted-foreground',
             )}
           >

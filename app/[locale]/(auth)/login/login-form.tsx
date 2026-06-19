@@ -7,37 +7,31 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { signIn } from '@/actions/auth/sign-in';
 import { signInWithMagicLink } from '@/actions/auth/sign-in-with-magic-link';
 import { SignInSchema, MagicLinkSchema } from '@/lib/schemas/auth';
 
 type SignInValues = z.infer<typeof SignInSchema>;
-type MagicLinkValues = z.infer<typeof MagicLinkSchema>;
 
 export function LoginForm() {
   const t = useTranslations('auth');
   const tErrors = useTranslations('errors');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [magicPending, startMagic] = useTransition();
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
-  const passwordForm = useForm<SignInValues>({
+  const form = useForm<SignInValues>({
     resolver: zodResolver(SignInSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  const magicForm = useForm<MagicLinkValues>({
-    resolver: zodResolver(MagicLinkSchema),
-    defaultValues: { email: '' },
-  });
-
-  function onPasswordSubmit(values: SignInValues) {
+  function onSubmit(values: SignInValues) {
     startTransition(async () => {
       const result = await signIn(values);
       if (!result.ok) {
@@ -49,9 +43,15 @@ export function LoginForm() {
     });
   }
 
-  function onMagicLinkSubmit(values: MagicLinkValues) {
-    startTransition(async () => {
-      const result = await signInWithMagicLink(values);
+  function onMagicLink() {
+    const email = form.getValues('email');
+    const parsed = MagicLinkSchema.safeParse({ email });
+    if (!parsed.success) {
+      form.setError('email', { message: parsed.error.issues[0]?.message });
+      return;
+    }
+    startMagic(async () => {
+      const result = await signInWithMagicLink(parsed.data);
       if (!result.ok) {
         toast.error(tErrors(result.error));
         return;
@@ -61,52 +61,38 @@ export function LoginForm() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl leading-[1.1] tracking-[-0.6px] [font-weight:600] sm:text-[34px]">
+    <div className="space-y-7">
+      <div className="space-y-1.5 text-center">
+        <h1 className="text-[28px] leading-[1.15] tracking-[-0.02em] [font-weight:590]">
           {t('loginTitle')}
         </h1>
-        <p className="text-[15px] text-muted-foreground [font-weight:450]">
-          {t('loginSubtitleClean')}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('loginSubtitleClean')}</p>
       </div>
 
-      <Tabs defaultValue="password" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="password">{t('password')}</TabsTrigger>
-          <TabsTrigger value="magic">
-            <Sparkles className="mr-1.5 size-3.5" aria-hidden />
-            {t('magicLink')}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="password" className="mt-5">
-          <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
-            <div className="space-y-2">
+      {magicLinkSent ? (
+        <div className="rounded-lg border border-border bg-status-info px-4 py-3 text-center text-sm text-status-info-foreground">
+          {t('magicLinkSent')}
+        </div>
+      ) : (
+        <>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
+            <div className="space-y-1.5">
               <Label htmlFor="email">{t('email')}</Label>
-              <div className="relative">
-                <Mail
-                  className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  placeholder="tu@email.com"
-                  className="pl-9"
-                  aria-invalid={passwordForm.formState.errors.email ? true : undefined}
-                  {...passwordForm.register('email')}
-                />
-              </div>
-              {passwordForm.formState.errors.email?.message && (
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="tu@email.com"
+                aria-invalid={form.formState.errors.email ? true : undefined}
+                {...form.register('email')}
+              />
+              {form.formState.errors.email?.message && (
                 <p className="text-sm text-destructive" role="alert">
-                  {passwordForm.formState.errors.email.message}
+                  {form.formState.errors.email.message}
                 </p>
               )}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-baseline justify-between">
                 <Label htmlFor="password">{t('password')}</Label>
                 <Link
@@ -116,83 +102,49 @@ export function LoginForm() {
                   {t('forgotPassword')}
                 </Link>
               </div>
-              <div className="relative">
-                <Lock
-                  className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="pl-9"
-                  aria-invalid={passwordForm.formState.errors.password ? true : undefined}
-                  {...passwordForm.register('password')}
-                />
-              </div>
-              {passwordForm.formState.errors.password?.message && (
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                aria-invalid={form.formState.errors.password ? true : undefined}
+                {...form.register('password')}
+              />
+              {form.formState.errors.password?.message && (
                 <p className="text-sm text-destructive" role="alert">
-                  {passwordForm.formState.errors.password.message}
+                  {form.formState.errors.password.message}
                 </p>
               )}
             </div>
             <Button type="submit" disabled={pending} className="w-full">
               {pending ? t('loggingIn') : t('signIn')}
-              {!pending && <ArrowRight className="ml-1 size-4" aria-hidden />}
             </Button>
           </form>
-        </TabsContent>
 
-        <TabsContent value="magic" className="mt-5">
-          {magicLinkSent ? (
-            <div className="rounded-2xl border border-border bg-status-info/40 px-4 py-3 text-sm text-status-info-foreground">
-              {t('magicLinkSent')}
-            </div>
-          ) : (
-            <form onSubmit={magicForm.handleSubmit(onMagicLinkSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email-magic">{t('email')}</Label>
-                <div className="relative">
-                  <Mail
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden
-                  />
-                  <Input
-                    id="email-magic"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="tu@email.com"
-                    className="pl-9"
-                    aria-invalid={magicForm.formState.errors.email ? true : undefined}
-                    {...magicForm.register('email')}
-                  />
-                </div>
-                {magicForm.formState.errors.email?.message && (
-                  <p className="text-sm text-destructive" role="alert">
-                    {magicForm.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-              <Button type="submit" disabled={pending} className="w-full">
-                {pending ? t('loggingIn') : t('magicLink')}
-                {!pending && <ArrowRight className="ml-1 size-4" aria-hidden />}
-              </Button>
-            </form>
-          )}
-        </TabsContent>
-      </Tabs>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            {t('or')}
+            <span className="h-px flex-1 bg-border" />
+          </div>
 
-      <div className="border-t border-border pt-6 text-center text-sm">
-        <span className="text-muted-foreground">{t('noAccount')} </span>
-        <Link
-          href="/signup"
-          className="[font-weight:500] text-foreground transition-colors hover:text-accent"
-        >
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full"
+            disabled={magicPending}
+            onClick={onMagicLink}
+          >
+            <Sparkles className="size-4" aria-hidden />
+            {magicPending ? t('loggingIn') : t('magicLink')}
+          </Button>
+        </>
+      )}
+
+      <p className="text-center text-sm text-muted-foreground">
+        {t('noAccount')}{' '}
+        <Link href="/signup" className="[font-weight:510] text-foreground transition-colors hover:text-link">
           {t('createOne')}
         </Link>
-      </div>
+      </p>
     </div>
   );
 }

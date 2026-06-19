@@ -17,6 +17,16 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ListEmpty } from '@/components/ui/list-empty';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { VendorForm } from '@/components/forms/vendor-form';
 import { deleteVendor } from '@/actions/vendors/delete-vendor';
 import type { Vendor } from '@/types/domain';
@@ -83,38 +93,47 @@ export function VendorsList({
       </div>
 
       {vendors.length === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">
-          {t('empty')}
-        </p>
+        <ListEmpty>{t('empty')}</ListEmpty>
       ) : (
-        <ul className="divide-y rounded-md border">
-          {vendors.map((v) => (
-            <li key={v.id} className="flex items-center justify-between gap-3 p-3 hover:bg-foreground/5">
-              <div>
-                <p className="font-medium">{v.name}</p>
-                {v.contact && <p className="text-xs text-muted-foreground">{v.contact}</p>}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setEditing(v)}
-                  aria-label={t('editAria', { name: v.name })}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeleting(v)}
-                  aria-label={t('deleteAria', { name: v.name })}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <DataTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{tCommon('name')}</TableHead>
+                <TableHead>{tCommon('contact')}</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {vendors.map((v) => (
+                <TableRow key={v.id}>
+                  <TableCell className="[font-weight:510] text-foreground">{v.name}</TableCell>
+                  <TableCell className="text-muted-foreground">{v.contact || '—'}</TableCell>
+                  <TableCell className="w-12">
+                    <div className="flex items-center justify-end gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => setEditing(v)}
+                        aria-label={t('editAria', { name: v.name })}
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => setDeleting(v)}
+                        aria-label={t('deleteAria', { name: v.name })}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DataTable>
       )}
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>

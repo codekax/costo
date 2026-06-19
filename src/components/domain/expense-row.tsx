@@ -47,7 +47,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
 
       {/* Title + secondary metadata */}
       <div className="pointer-events-none relative z-10 min-w-0 flex-1">
-        <p className="truncate text-[15px] leading-[1.27] [font-weight:600] tracking-[-0.01em] text-foreground">
+        <p className="truncate text-[15px] leading-[1.27] [font-weight:590] tracking-[-0.01em] text-foreground">
           {expense.description || expense.category.name}
         </p>
         <p className="mt-0.5 truncate text-[13px] leading-[1.23] text-muted-foreground">
@@ -59,7 +59,7 @@ export function ExpenseRow({ expense }: { expense: ExpenseWithRelations }) {
 
       {/* Trailing amount stack */}
       <div className="pointer-events-none relative z-10 flex shrink-0 flex-col items-end gap-0.5">
-        <span className="tabular-nums text-[15px] [font-weight:600] tracking-[-0.01em] text-foreground">
+        <span className="tabular-nums text-[15px] [font-weight:590] tracking-[-0.01em] text-foreground">
           {formatCurrency(Number(expense.amount), expense.currency)}
         </span>
         <span className="hidden tabular-nums text-[12px] text-muted-foreground sm:inline">

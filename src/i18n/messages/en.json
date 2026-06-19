@@ -17,7 +17,9 @@
     "yes": "Yes",
     "no": "No",
     "retry": "Retry",
-    "appName": "costo"
+    "appName": "costo",
+    "name": "Name",
+    "contact": "Contact"
   },
   "auth": {
     "signIn": "Sign in",
@@ -38,7 +40,9 @@
     "loginTitle": "Welcome back",
     "loginSubtitleClean": "Sign in to your expense workspace.",
     "noAccount": "Don't have an account yet?",
-    "createOne": "Create one"
+    "createOne": "Create one",
+    "or": "or",
+    "haveAccount": "Already have an account?"
   },
   "authHero": {
     "brand": "costo",
@@ -67,6 +71,19 @@
     "navigation": "Navigation",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar"
+  },
+  "breadcrumbs": {
+    "dashboard": "Home",
+    "expenses": "Expenses",
+    "projects": "Projects",
+    "categories": "Categories",
+    "vendors": "Vendors",
+    "import": "Import",
+    "settings": "Settings",
+    "profile": "Profile",
+    "workspaces": "Workspaces",
+    "members": "Members",
+    "detail": "Detail"
   },
   "errors": {
     "invalid_input": "Check the data you entered",
@@ -157,7 +174,12 @@
     "createCategoryCta": "Create category",
     "saveAndAddAnother": "Save and add another",
     "saveExpenseWithAmount": "Save expense {amount}",
-    "descriptionPlaceholderRich": "e.g. Cement for columns"
+    "descriptionPlaceholderRich": "e.g. Cement for columns",
+    "colDate": "Date",
+    "colDescription": "Description",
+    "colCategory": "Category",
+    "colProject": "Project",
+    "colAmount": "Amount"
   },
   "projects": {
     "title": "Projects",
@@ -203,7 +225,9 @@
     "budget": "Budget: {amount}",
     "deleteTitle": "Delete project",
     "deleteDescription": "This will permanently delete the project {name} and all its associated expenses. This cannot be undone.",
-    "typeToConfirm": "Type {name} to confirm"
+    "typeToConfirm": "Type {name} to confirm",
+    "colType": "Type",
+    "colExpenses": "Expenses"
   },
   "categories": {
     "title": "Categories",
@@ -313,7 +337,11 @@
     "invitationCreated": "Invitation created",
     "invitationCreatedDescription": "We sent them an email. If it doesn't arrive, you can share this direct link:",
     "copyLinkAria": "Copy link",
-    "done": "Done"
+    "done": "Done",
+    "colMember": "Member",
+    "colRole": "Role",
+    "colExpires": "Expires",
+    "colEmail": "Email"
   },
   "acceptInvitation": {
     "invalidTitle": "Invalid invitation",
@@ -417,6 +445,7 @@
     "last12Months": "Last 12 months",
     "monthlyTitle": "Monthly evolution",
     "monthlyDescription": "ARS and USD accumulated per month",
+    "forecastLabel": "Forecast",
     "activeProjects": "Active projects",
     "topVendors": "Top vendors",
     "topVendorsDescription": "By total amount",
@@ -506,5 +535,29 @@
     "accountCreated": "Account created — check your email to confirm.",
     "csvDownloaded": "CSV downloaded",
     "welcome": "Welcome!"
+  },
+  "landing": {
+    "navLogin": "Log in",
+    "navSignup": "Sign up",
+    "eyebrow": "Built for the real world, not the demo",
+    "heroTitle": "Track every expense across projects and",
+    "heroTitleAccent": "currencies.",
+    "heroSubtitle": "costo replaces your spreadsheet: multi-project, multi-currency (ARS/USD) expense tracking you can share with your partner or family.",
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "Log in",
+    "featuresEyebrow": "Why costo",
+    "featuresTitle": "Everything your spreadsheet could not do",
+    "feature1Title": "Multi-currency, done right",
+    "feature1Body": "ARS and USD with a snapshot FX rate stored per expense — your reports never drift when the rate moves.",
+    "feature2Title": "Shared workspaces",
+    "feature2Body": "Invite your partner or family. Everyone sees the same projects, categories and totals in real time.",
+    "feature3Title": "Import your Excel",
+    "feature3Body": "Bring your existing spreadsheet in under a minute. New categories and vendors are created on the fly.",
+    "mockHeader": "Renovation · This month",
+    "mockTotal": "Total this month",
+    "mockCat1": "Materials",
+    "mockCat2": "Labor",
+    "mockCat3": "Permits",
+    "footerLegal": "costo · ARS · USD · ES · EN"
   }
 }

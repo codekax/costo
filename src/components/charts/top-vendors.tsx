@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
+import { ListEmpty } from '@/components/ui/list-empty';
 import { formatCurrency } from '@/utils/format';
 import type { VendorBreakdown } from '@/lib/db/queries/dashboard';
 
@@ -18,11 +19,7 @@ export function TopVendors({ data }: { data: VendorBreakdown[] }) {
   const tProjects = useTranslations('projects');
 
   if (data.length === 0) {
-    return (
-      <p className="py-8 text-center text-sm text-muted-foreground">
-        {t('vendorsEmpty')}
-      </p>
-    );
+    return <ListEmpty>{t('vendorsEmpty')}</ListEmpty>;
   }
 
   const maxArs = Math.max(...data.map((v) => v.ars), 0);
@@ -40,14 +37,14 @@ export function TopVendors({ data }: { data: VendorBreakdown[] }) {
               className="group flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-foreground/[0.03]"
             >
               <span
-                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs tabular-nums [font-weight:500] text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
+                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs tabular-nums [font-weight:510] text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
                 aria-hidden
               >
                 {idx + 1}
               </span>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="truncate text-sm [font-weight:500] tracking-[-0.32px]">
+                  <span className="truncate text-sm [font-weight:510] tracking-[-0.32px]">
                     {v.name}
                   </span>
                   <span className="shrink-0 text-xs tabular-nums text-muted-foreground">

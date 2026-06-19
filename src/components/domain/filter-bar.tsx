@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarRange, Tag, Users, Coins, X } from 'lucide-react';
+import { CalendarRange, Tag, Coins, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useExpenseFilters } from '@/hooks/use-expense-filters';
 import { Badge } from '@/components/ui/badge';
@@ -18,28 +18,18 @@ import {
 
 type Option = { id: string; name: string; color?: string };
 
-export function FilterBar({
-  categories,
-  vendors,
-}: {
-  categories: Option[];
-  vendors: Option[];
-}) {
+export function FilterBar({ categories }: { categories: Option[] }) {
   const t = useTranslations('filters');
   const [filters, setFilters] = useExpenseFilters();
 
   const activeCount =
     Number(!!filters.category) +
-    Number(!!filters.vendor) +
     Number(!!filters.currency) +
     Number(!!filters.from) +
     Number(!!filters.to);
 
   const categoryName = filters.category
     ? categories.find((c) => c.id === filters.category)?.name
-    : null;
-  const vendorName = filters.vendor
-    ? vendors.find((v) => v.id === filters.vendor)?.name
     : null;
 
   const fromIso = filters.from ? formatDate(filters.from) : '';
@@ -132,31 +122,6 @@ export function FilterBar({
         </Select>
       </FilterPill>
 
-      {/* Vendor */}
-      <FilterPill
-        active={!!filters.vendor}
-        label={vendorName ?? t('vendor')}
-        icon={<Users className="size-4" />}
-        onClear={() => void setFilters({ vendor: '' })}
-      >
-        <Select
-          value={filters.vendor || 'all'}
-          onValueChange={(v) => void setFilters({ vendor: v === 'all' ? '' : v })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t('allMasc')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('allMasc')}</SelectItem>
-            {vendors.map((v) => (
-              <SelectItem key={v.id} value={v.id}>
-                {v.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FilterPill>
-
       {/* Currency */}
       <FilterPill
         active={!!filters.currency}
@@ -193,7 +158,7 @@ export function FilterBar({
               to: null,
             })
           }
-          className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] [font-weight:500] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:h-8 sm:text-xs"
+          className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] [font-weight:510] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:h-8 sm:text-xs"
         >
           {t('clearAll')}
           <Badge variant="secondary" className="px-1.5">
@@ -206,16 +171,16 @@ export function FilterBar({
 }
 
 /**
- * Shared pill style for trigger + clear-all buttons. iOS toolbar pill look:
- * hairline border at rest, tinted accent surface when active, slightly
- * taller on mobile (36px touch target) than desktop (32px) to satisfy HIG.
+ * Shared pill style for trigger + clear-all buttons (Linear toolbar chip):
+ * hairline border at rest, a subtle indigo tint when a value is applied.
+ * Slightly taller on mobile (36px touch target) than desktop (32px).
  */
 function pillClass(active: boolean): string {
   return [
-    'inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] [font-weight:500] transition-colors',
+    'inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] [font-weight:510] transition-colors',
     'sm:h-8 sm:text-xs',
     active
-      ? 'border-accent/30 bg-status-info text-status-info-foreground'
+      ? 'border-primary/40 bg-primary/[0.08] text-foreground'
       : 'border-border bg-card text-foreground hover:bg-muted',
   ].join(' ');
 }

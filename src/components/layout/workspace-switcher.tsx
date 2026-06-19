@@ -58,8 +58,8 @@ export function WorkspaceSwitcher({
             className="flex items-center justify-between"
           >
             <div className="flex flex-col">
-              <span className="text-sm [font-weight:500]">{ws.name}</span>
-              <span className="text-xs text-muted-foreground [font-weight:450]">
+              <span className="text-sm [font-weight:510]">{ws.name}</span>
+              <span className="text-xs text-muted-foreground [font-weight:400]">
                 {ws.kind === 'personal' ? t('personal') : t('shared')} · {ws.role}
               </span>
             </div>

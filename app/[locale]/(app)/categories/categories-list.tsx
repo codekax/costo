@@ -17,6 +17,16 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ListEmpty } from '@/components/ui/list-empty';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { CategoryForm } from '@/components/forms/category-form';
 import { deleteCategory } from '@/actions/categories/delete-category';
 import { getCategoryIcon } from '@/lib/category-icons';
@@ -85,53 +95,60 @@ export function CategoriesList({
       </div>
 
       {categories.length === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">
-          {t('empty')}
-        </p>
+        <ListEmpty>{t('empty')}</ListEmpty>
       ) : (
-        <ul className="divide-y rounded-md border">
-          {categories.map((c) => {
-            const Icon = getCategoryIcon(c.icon);
-            return (
-              <li
-                key={c.id}
-                className="flex items-center justify-between gap-3 p-3 transition-colors hover:bg-foreground/[0.04]"
-              >
-                <div className="flex items-center gap-3">
-                  {/* Circular portrait — matches the live preview in CategoryForm */}
-                  <span
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full"
-                    style={{ backgroundColor: `${c.color}1a`, color: c.color }}
-                    aria-hidden
-                  >
-                    <Icon className="size-[18px]" strokeWidth={1.75} />
-                  </span>
-                  <span className="text-base [font-weight:500] tracking-[-0.32px]">
-                    {c.name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditing(c)}
-                    aria-label={t('editAria', { name: c.name })}
-                  >
-                    <Pencil className="size-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleting(c)}
-                    aria-label={t('deleteAria', { name: c.name })}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <DataTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{tCommon('name')}</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.map((c) => {
+                const Icon = getCategoryIcon(c.icon);
+                return (
+                  <TableRow key={c.id}>
+                    <TableCell>
+                      <span className="flex items-center gap-2.5">
+                        {/* Category identity — color swatch + icon */}
+                        <span
+                          className="flex size-7 shrink-0 items-center justify-center rounded-full"
+                          style={{ backgroundColor: `${c.color}1a`, color: c.color }}
+                          aria-hidden
+                        >
+                          <Icon className="size-4" strokeWidth={1.75} />
+                        </span>
+                        <span className="[font-weight:510] text-foreground">{c.name}</span>
+                      </span>
+                    </TableCell>
+                    <TableCell className="w-12">
+                      <div className="flex items-center justify-end gap-0.5">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => setEditing(c)}
+                          aria-label={t('editAria', { name: c.name })}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => setDeleting(c)}
+                          aria-label={t('deleteAria', { name: c.name })}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </DataTable>
       )}
 
       {/* Edit dialog */}

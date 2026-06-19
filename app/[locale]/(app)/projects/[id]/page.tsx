@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageTitle } from '@/components/layout/page-title';
+import { ListEmpty } from '@/components/ui/list-empty';
 import { Progress } from '@/components/ui/progress';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjectById, getProjectTotals } from '@/lib/db/queries/projects';
@@ -47,12 +49,11 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="space-y-6">
+      <PageTitle>{project.name}</PageTitle>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">
-              {project.name}
-            </h1>
             <Badge variant="outline" className="capitalize">
               {project.type}
             </Badge>
@@ -88,7 +89,7 @@ export default async function ProjectDetailPage({
             <CardTitle className="text-sm font-medium text-muted-foreground">{t('totalArs')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
+            <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:510] sm:text-3xl">
               {formatCurrency(totals.ars, 'ARS')}
             </p>
             {project.budget_ars && Number(project.budget_ars) > 0 && (
@@ -107,7 +108,7 @@ export default async function ProjectDetailPage({
             <CardTitle className="text-sm font-medium text-muted-foreground">{t('totalUsd')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
+            <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:510] sm:text-3xl">
               {formatCurrency(totals.usd, 'USD')}
             </p>
             {project.budget_usd && Number(project.budget_usd) > 0 && (
@@ -128,9 +129,7 @@ export default async function ProjectDetailPage({
         </CardHeader>
         <CardContent>
           {expenses.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              {t('noExpensesYet')}
-            </p>
+            <ListEmpty>{t('noExpensesYet')}</ListEmpty>
           ) : (
             <div className="space-y-2">
               {expenses.map((e) => (

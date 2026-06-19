@@ -106,10 +106,10 @@ export async function CategoryDonut({
                         style={{ backgroundColor: item.color }}
                         aria-hidden
                       />
-                      <span className="text-foreground [font-weight:500]">{item.name}</span>
+                      <span className="text-foreground [font-weight:510]">{item.name}</span>
                     </div>
                     <div className="flex items-center justify-between gap-6">
-                      <span className="tabular-nums text-foreground [font-weight:500]">
+                      <span className="tabular-nums text-foreground [font-weight:510]">
                         {formatCurrency(item.value, currency)}
                       </span>
                       <span className="tabular-nums text-xs text-muted-foreground">
@@ -129,7 +129,7 @@ export async function CategoryDonut({
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
             {currency}
           </span>
-          <span className="tabular-nums text-base [font-weight:540] tracking-[-0.02em] sm:text-lg">
+          <span className="tabular-nums text-base [font-weight:510] tracking-[-0.02em] sm:text-lg">
             {formatCompact(total, currency)}
           </span>
         </div>
@@ -142,7 +142,7 @@ export async function CategoryDonut({
           return (
             <li
               key={item.id}
-              className="flex items-center gap-2 truncate text-xs [font-weight:450]"
+              className="flex items-center gap-2 truncate text-xs [font-weight:400]"
             >
               <span
                 className="size-2 shrink-0 rounded-full"

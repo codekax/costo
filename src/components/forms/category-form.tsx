@@ -82,7 +82,7 @@ export function CategoryForm({
         >
           <PreviewIcon className="size-9" strokeWidth={1.75} />
         </div>
-        <p className="text-xs text-muted-foreground [font-weight:450]">
+        <p className="text-xs text-muted-foreground [font-weight:400]">
           {form.watch('name') || tCategories('namePlaceholder')}
         </p>
       </div>

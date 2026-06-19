@@ -8,6 +8,15 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { removeMember } from '@/actions/workspaces/remove-member';
 import { transferOwnership } from '@/actions/workspaces/transfer-ownership';
 import type { WorkspaceMemberInfo } from '@/lib/db/queries/members';
@@ -54,58 +63,73 @@ export function MembersList({
   }
 
   return (
-    <ul className="divide-y">
-      {members.map((m) => {
-        const display = m.display_name ?? m.email ?? t('fallbackMember');
-        const initial = (display.charAt(0) || 'M').toUpperCase();
-        return (
-          <li
-            key={m.user_id}
-            className="flex flex-wrap items-center justify-between gap-3 py-3"
-          >
-            <div className="flex items-center gap-3">
-              <Avatar className="size-9">
-                <AvatarFallback>{initial}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-medium">{display}</p>
-                {m.email && m.email !== display && (
-                  <p className="text-xs text-muted-foreground">{m.email}</p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={m.role === 'owner' ? 'default' : 'secondary'}>
-                {m.role === 'owner' && <Crown className="mr-1 size-3" />}
-                {m.role}
-              </Badge>
-              {canManage && m.role !== 'owner' && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onTransfer(m.user_id, display)}
-                    disabled={pending}
-                    aria-label={t('transferAria')}
-                    title={t('transferAria')}
+    <DataTable>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('colMember')}</TableHead>
+            <TableHead>{t('colRole')}</TableHead>
+            <TableHead className="w-16" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {members.map((m) => {
+            const display = m.display_name ?? m.email ?? t('fallbackMember');
+            const initial = (display.charAt(0) || 'M').toUpperCase();
+            return (
+              <TableRow key={m.user_id}>
+                <TableCell>
+                  <div className="flex items-center gap-2.5">
+                    <Avatar className="size-8">
+                      <AvatarFallback className="text-xs">{initial}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="truncate [font-weight:510] text-foreground">{display}</p>
+                      {m.email && m.email !== display && (
+                        <p className="truncate text-xs text-muted-foreground">{m.email}</p>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={m.role === 'owner' ? 'default' : 'secondary'}
+                    className="capitalize"
                   >
-                    <ArrowRightLeft className="size-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemove(m.user_id, display)}
-                    disabled={pending}
-                    aria-label={t('removeAria')}
-                  >
-                    <UserMinus className="size-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+                    {m.role === 'owner' && <Crown className="mr-1 size-3" />}
+                    {m.role}
+                  </Badge>
+                </TableCell>
+                <TableCell className="w-16">
+                  {canManage && m.role !== 'owner' ? (
+                    <div className="flex items-center justify-end gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => onTransfer(m.user_id, display)}
+                        disabled={pending}
+                        aria-label={t('transferAria')}
+                        title={t('transferAria')}
+                      >
+                        <ArrowRightLeft className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => onRemove(m.user_id, display)}
+                        disabled={pending}
+                        aria-label={t('removeAria')}
+                      >
+                        <UserMinus className="size-4" />
+                      </Button>
+                    </div>
+                  ) : null}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </DataTable>
   );
 }

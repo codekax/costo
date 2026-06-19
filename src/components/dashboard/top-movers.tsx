@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ListEmpty } from '@/components/ui/list-empty';
 import type { CategoryBreakdown } from '@/lib/db/queries/dashboard';
 import { cn } from '@/lib/utils';
 
@@ -33,9 +34,7 @@ export function TopMovers({ categories }: { categories: CategoryBreakdown[] }) {
     .slice(0, 5);
 
   if (movers.length === 0) {
-    return (
-      <p className="py-6 text-center text-sm text-muted-foreground">{t('moversEmpty')}</p>
-    );
+    return <ListEmpty>{t('moversEmpty')}</ListEmpty>;
   }
 
   return (
@@ -51,12 +50,12 @@ export function TopMovers({ categories }: { categories: CategoryBreakdown[] }) {
               style={{ backgroundColor: category.color }}
               aria-hidden
             />
-            <span className="truncate text-sm [font-weight:500] tracking-[-0.32px]">
+            <span className="truncate text-sm [font-weight:510] tracking-[-0.32px]">
               {category.name}
             </span>
             <span
               className={cn(
-                'ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] tabular-nums [font-weight:500]',
+                'ml-auto inline-flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] tabular-nums [font-weight:510]',
                 direction === 'up'
                   ? 'bg-destructive/10 text-destructive'
                   : 'bg-status-success/30 text-status-success-foreground',

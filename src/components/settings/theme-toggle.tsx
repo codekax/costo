@@ -43,7 +43,7 @@ export function ThemeToggle() {
             aria-checked={active}
             onClick={() => setTheme(opt.value)}
             className={cn(
-              'flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[13px] [font-weight:500] transition-colors sm:py-1.5',
+              'flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[13px] [font-weight:510] transition-colors sm:py-1.5',
               active
                 ? 'bg-card text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground',

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 
 import { ImportFlow } from './import-flow';
@@ -28,10 +28,7 @@ export default async function ImportPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={t('description')}
-      />
+      <PageTitle>{t('title')}</PageTitle>
 
       <Card>
         <CardHeader>

@@ -39,7 +39,7 @@ export function TotalCard({
           )}
         </div>
         <div className="flex items-end justify-between gap-3">
-          <p className="truncate text-[28px] tabular-nums tracking-[-0.022em] [font-weight:700] leading-[1.18] sm:text-[34px]">
+          <p className="truncate text-[28px] tabular-nums tracking-[-0.022em] [font-weight:590] leading-[1.18] sm:text-[34px]">
             {formatCurrency(amount, currency)}
           </p>
           <Sparkline
@@ -83,7 +83,7 @@ function DeltaChip({ current, previous }: { current: number; previous: number })
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] tabular-nums [font-weight:500]',
+        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] tabular-nums [font-weight:510]',
         tone,
       )}
     >

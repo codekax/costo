@@ -37,8 +37,8 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        // Mastercard: pill trigger matching Input — white surface, ink hairline, ink ring on focus
-        "flex w-full items-center justify-between gap-2 rounded-full border border-input bg-secondary px-5 py-2 text-base [font-weight:450] whitespace-nowrap transition-[border-color,box-shadow] outline-none focus-visible:border-foreground focus-visible:ring-[2px] focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-11 data-[size=sm]:h-9 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
+        // Linear trigger matching Input — pill, card surface, hairline, indigo ring on focus
+        "flex w-full items-center justify-between gap-2 rounded-full border border-input bg-card px-3.5 py-1 text-[13px] [font-weight:400] whitespace-nowrap transition-[border-color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-7 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         className
       )}
       {...props}
@@ -112,7 +112,7 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         // Mastercard: rounded item with subtle hover (cream-on-cream)
-        "relative flex w-full cursor-default items-center gap-2 rounded-md py-2 pr-8 pl-3 text-sm [font-weight:450] outline-hidden select-none focus:bg-foreground/5 focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-default items-center gap-2 rounded-md py-2 pr-8 pl-3 text-sm [font-weight:400] outline-hidden select-none focus:bg-foreground/5 focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}
       {...props}

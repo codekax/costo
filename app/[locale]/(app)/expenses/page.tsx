@@ -4,8 +4,8 @@ import { Plus, Receipt } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { PageHeader } from '@/components/ui/page-header';
-import { ExpenseRow } from '@/components/domain/expense-row';
+import { PageTitle } from '@/components/layout/page-title';
+import { ExpenseTable } from '@/components/domain/expense-table';
 import { FilterBar } from '@/components/domain/filter-bar';
 import { SearchInput } from '@/components/domain/search-input';
 import { ExportCsvButton } from '@/components/domain/export-csv-button';
@@ -15,7 +15,6 @@ import { parseExpenseFiltersFromObject } from '@/lib/expense-filters';
 import { getExpenses, getWorkspaceTotals } from '@/lib/db/queries/expenses';
 import { getProjects } from '@/lib/db/queries/projects';
 import { getCategories } from '@/lib/db/queries/categories';
-import { getVendors } from '@/lib/db/queries/vendors';
 import { formatCurrency } from '@/utils/format';
 import { EXPENSE_LIST_DEFAULT_LIMIT } from '@/constants/expenses';
 
@@ -46,12 +45,11 @@ export default async function ExpensesPage({
   const { workspace, supabase } = await requireWorkspaceContext();
   const { scope, filters, hasFilters } = parseExpenseFiltersFromObject(sp);
 
-  const [expenses, totals, projects, categories, vendors] = await Promise.all([
+  const [expenses, totals, projects, categories] = await Promise.all([
     getExpenses(supabase, workspace.id, filters, EXPENSE_LIST_DEFAULT_LIMIT * 2),
     getWorkspaceTotals(supabase, workspace.id),
     getProjects(supabase, workspace.id, { archived: false }),
     getCategories(supabase, workspace.id),
-    getVendors(supabase, workspace.id),
   ]);
 
   const scopedTotals = expenses.reduce(
@@ -95,35 +93,32 @@ export default async function ExpensesPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={description}
-        actions={
-          <>
-            <ExportCsvButton workspaceId={workspace.id} />
-            <Button asChild>
-              <Link href="/expenses/new">
-                <Plus className="mr-1 size-4" /> {t('newExpense')}
-              </Link>
-            </Button>
-          </>
-        }
-      />
+      <PageTitle>{t('title')}</PageTitle>
 
-      <ExpensesScopeTabs
-        scope={scope}
-        projects={projects.map((p) => ({ id: p.id, name: p.name }))}
-      />
-
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="min-w-[220px] flex-1 sm:max-w-md">
-          <SearchInput />
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <div className="flex flex-1 flex-wrap items-center gap-2">
+          <ExpensesScopeTabs
+            scope={scope}
+            projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+          />
+          <div className="min-w-[160px] max-w-xs flex-1">
+            <SearchInput />
+          </div>
+          <FilterBar
+            categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
+          />
         </div>
-        <FilterBar
-          categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
-          vendors={vendors.map((v) => ({ id: v.id, name: v.name }))}
-        />
+        <div className="flex items-center gap-2">
+          <ExportCsvButton workspaceId={workspace.id} />
+          <Button asChild>
+            <Link href="/expenses/new">
+              <Plus className="mr-1 size-4" /> {t('newExpense')}
+            </Link>
+          </Button>
+        </div>
       </div>
+
+      <p className="text-[13px] text-muted-foreground">{description}</p>
 
       {expenses.length === 0 ? (
         <EmptyState
@@ -149,11 +144,7 @@ export default async function ExpensesPage({
           }
         />
       ) : (
-        <div className="space-y-2">
-          {expenses.map((e) => (
-            <ExpenseRow key={e.id} expense={e} />
-          ))}
-        </div>
+        <ExpenseTable expenses={expenses} />
       )}
     </div>
   );

@@ -2,52 +2,41 @@ import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * Dashboard loading state. Mirrors `app/[locale]/(app)/dashboard/page.tsx`
- * one-for-one so hydration replaces shapes in place:
- *  - PageHeader + 1 action (Nuevo gasto)
- *  - PeriodSelector pill row
- *  - InsightsBanner (compact)
- *  - 2× TotalCard (h-40 to fit eyebrow + value + sparkline + delta line)
- *  - QuickAddExpense row (h-32 — form padding included)
- *  - 2× chart card (donut + monthly)
- *  - Projects + TopMovers grid
- *  - Top vendors + recent expenses grid
+ * Dashboard loading state. Mirrors `dashboard/page.tsx`: the title lives in the
+ * top bar (no in-page heading), then the action row, insights, KPIs, quick-add,
+ * the stacked donut + monthly charts, and the projects + recent grid.
  */
 export default function DashboardLoading() {
   return (
-    <PageSkeleton actions={1}>
-      {/* Period selector pill toggle */}
-      <Skeleton className="h-9 w-72 rounded-full" />
+    <PageSkeleton title={false} actions={0}>
+      {/* Action row: period selector + new expense */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Skeleton className="h-8 w-72 rounded-full" />
+        <Skeleton className="h-8 w-32 rounded-full" />
+      </div>
 
-      {/* Insights banner — only renders when triggered, but keep the slot to
-          avoid a jump if it appears. */}
-      <Skeleton className="h-20 rounded-[18px]" />
+      {/* Insights banner slot */}
+      <Skeleton className="h-20 rounded-lg" />
 
       {/* Two KPI cards with sparkline */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Skeleton className="h-40 rounded-[18px]" />
-        <Skeleton className="h-40 rounded-[18px]" />
+        <Skeleton className="h-40 rounded-lg" />
+        <Skeleton className="h-40 rounded-lg" />
       </div>
 
       {/* Quick-add inline form */}
-      <Skeleton className="h-32 rounded-[18px]" />
+      <Skeleton className="h-32 rounded-lg" />
 
-      {/* Category donut + monthly evolution */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Skeleton className="h-[420px] rounded-[18px]" />
-        <Skeleton className="h-[420px] rounded-[18px]" />
+      {/* Category donut + monthly evolution (stacked) */}
+      <div className="grid gap-4">
+        <Skeleton className="h-[420px] rounded-lg" />
+        <Skeleton className="h-[420px] rounded-lg" />
       </div>
 
-      {/* Active projects + top movers */}
-      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <Skeleton className="h-72 rounded-[18px]" />
-        <Skeleton className="h-72 rounded-[18px]" />
-      </div>
-
-      {/* Top vendors + recent expenses */}
+      {/* Active projects + recent expenses */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Skeleton className="h-[360px] rounded-[18px]" />
-        <Skeleton className="h-[360px] rounded-[18px]" />
+        <Skeleton className="h-72 rounded-lg" />
+        <Skeleton className="h-72 rounded-lg" />
       </div>
     </PageSkeleton>
   );

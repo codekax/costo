@@ -11,11 +11,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CategoryDonut } from '@/components/charts/category-donut';
 import { MonthlyEvolution } from '@/components/charts/monthly-evolution';
-import { TopVendors } from '@/components/charts/top-vendors';
 import { ProjectProgressList } from '@/components/charts/project-progress';
 import { ExpenseRow } from '@/components/domain/expense-row';
 
@@ -23,7 +22,6 @@ import { TotalCard } from '@/components/dashboard/total-card';
 import { PeriodSelector } from '@/components/dashboard/period-selector';
 import { InsightsBanner } from '@/components/dashboard/insights-banner';
 import { BudgetAlerts } from '@/components/dashboard/budget-alerts';
-import { TopMovers } from '@/components/dashboard/top-movers';
 import { QuickAddExpense } from '@/components/dashboard/quick-add';
 
 import { requireWorkspaceContext } from '@/lib/workspace-context';
@@ -73,20 +71,15 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={workspace.name}
-        actions={
-          <Button asChild>
-            <Link href="/expenses/new">
-              <Plus className="mr-1 size-4" /> {tExp('newExpense')}
-            </Link>
-          </Button>
-        }
-      />
+      <PageTitle>{t('title')}</PageTitle>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PeriodSelector value={period} />
+        <Button asChild>
+          <Link href="/expenses/new">
+            <Plus className="mr-1 size-4" /> {tExp('newExpense')}
+          </Link>
+        </Button>
       </div>
 
       <BudgetAlerts projects={projects} />
@@ -142,7 +135,7 @@ export default async function DashboardPage({
             categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
           />
 
-          <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+          <div className="grid gap-4 lg:grid-cols-2">
             <Card className="reveal cv-chart-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('byCategory')}</CardTitle>
@@ -170,39 +163,37 @@ export default async function DashboardPage({
                 <CardDescription>{t('monthlyDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <MonthlyEvolution data={data.monthly} forecast={data.forecast} />
+                <Tabs defaultValue="ars">
+                  <TabsList className="mb-3">
+                    <TabsTrigger value="ars">ARS</TabsTrigger>
+                    <TabsTrigger value="usd">USD</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="ars">
+                    <MonthlyEvolution
+                      data={data.monthly}
+                      forecast={data.forecast}
+                      currency="ARS"
+                    />
+                  </TabsContent>
+                  <TabsContent value="usd">
+                    <MonthlyEvolution
+                      data={data.monthly}
+                      forecast={data.forecast}
+                      currency="USD"
+                    />
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <div className="grid gap-4">
             <Card className="reveal cv-card">
               <CardHeader>
                 <CardTitle className="text-base">{t('activeProjects')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ProjectProgressList projects={projects} />
-              </CardContent>
-            </Card>
-
-            <Card className="reveal cv-card">
-              <CardHeader>
-                <CardTitle className="text-base">{t('topMovers')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <TopMovers categories={data.byCategory} />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <Card className="reveal cv-card">
-              <CardHeader>
-                <CardTitle className="text-base">{t('topVendors')}</CardTitle>
-                <CardDescription>{t('topVendorsDescription')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TopVendors data={data.topVendors} />
               </CardContent>
             </Card>
 

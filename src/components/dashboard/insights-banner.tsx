@@ -89,17 +89,17 @@ export async function InsightsBanner({
   if (insights.length === 0) return null;
 
   return (
-    <Card className="border-accent/20 bg-accent/5">
+    <Card className="border-primary/20 bg-primary/5">
       <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <span
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
           aria-hidden
         >
           <Lightbulb className="size-4" />
         </span>
         <div className="space-y-1.5">
-          <p className="eyebrow !text-accent">{t('title')}</p>
-          <ul className="space-y-1 text-sm [font-weight:450]">
+          <p className="eyebrow !text-primary">{t('title')}</p>
+          <ul className="space-y-1 text-sm [font-weight:400]">
             {insights.slice(0, 3).map((ins, idx) => (
               <li key={idx}>{ins.text}</li>
             ))}

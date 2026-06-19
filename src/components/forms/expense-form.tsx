@@ -204,7 +204,7 @@ export function ExpenseForm({
           form.setValue('paidAt', value, { shouldDirty: true, shouldValidate: true })
         }
         className={cn(
-          'inline-flex h-9 items-center rounded-full border px-3 text-[13px] [font-weight:500] transition-colors sm:h-8 sm:text-xs',
+          'inline-flex h-9 items-center rounded-full border px-3 text-[13px] [font-weight:510] transition-colors sm:h-8 sm:text-xs',
           active
             ? 'border-foreground/0 bg-foreground text-background'
             : 'border-border bg-card text-foreground hover:bg-muted',

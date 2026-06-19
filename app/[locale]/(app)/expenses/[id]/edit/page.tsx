@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { ExpenseForm } from '@/components/forms/expense-form';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getExpenseById } from '@/lib/db/queries/expenses';
@@ -31,7 +31,7 @@ export default async function EditExpensePage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title={t('editExpense')} description={expense.description ?? t('fieldEmpty')} />
+      <PageTitle>{t('editExpense')}</PageTitle>
       <Card>
         <CardHeader>
           <CardTitle>{t('formCardTitle')}</CardTitle>

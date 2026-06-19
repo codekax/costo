@@ -1,21 +1,21 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Sofia_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import { Providers } from '@/components/providers';
 import { routing, type Locale } from '@/i18n/routing';
 import '../globals.css';
 
 /**
- * Sofia Sans substitutes MarkForMC (Mastercard proprietary).
- * Mastercard's own declared fallback stack lists Sofia Sans first — the
- * variable wght axis exposes 450 (body) and 500 (display) directly.
+ * Inter Variable — the Linear typeface. Drives the whole app via `--font-sans`
+ * in globals.css. The Linear OpenType signature (`cv01`+`ss03`) is applied on
+ * `body` there, not here.
  */
-const sofiaSans = Sofia_Sans({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-sofia-sans',
+  variable: '--font-inter',
   weight: 'variable',
 });
 
@@ -41,7 +41,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning className={sofiaSans.variable}>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={inter.variable}
+    >
       <body className="bg-background text-foreground font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>

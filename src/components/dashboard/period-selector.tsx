@@ -49,7 +49,7 @@ export function PeriodSelector({ value }: { value: DashboardPeriod }) {
             aria-selected={active}
             onClick={() => setPeriod(p)}
             className={cn(
-              'rounded-full px-3 py-1 text-xs [font-weight:500] tabular-nums transition-colors',
+              'rounded-full px-3 py-1 text-xs [font-weight:510] tabular-nums transition-colors',
               active
                 ? 'bg-foreground text-background'
                 : 'text-muted-foreground hover:text-foreground',

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { createServerClient } from '@/lib/supabase/server';
 import { ProfileForm } from './profile-form';
 import { ThemeToggle } from '@/components/settings/theme-toggle';
@@ -30,7 +30,7 @@ export default async function ProfilePage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title={t('profileTitle')} description={user.email} />
+      <PageTitle>{t('profileTitle')}</PageTitle>
 
       <Card>
         <CardHeader>

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { setRequestLocale, getTranslations, getLocale } from 'next-intl/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { createServerClient } from '@/lib/supabase/server';
 import { getCurrentUserWorkspaces } from '@/lib/db/queries/workspaces';
 import { DeleteAccountSection } from './delete-account-section';
@@ -30,7 +30,7 @@ export default async function AccountPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title={t('accountTitle')} description={user.email} />
+      <PageTitle>{t('accountTitle')}</PageTitle>
 
       <Card>
         <CardHeader>

@@ -35,7 +35,7 @@ export function GhostWatermark({
   return (
     <div
       className={cn(
-        'pointer-events-none select-none text-[clamp(64px,8vw,140px)] [font-weight:600] leading-[0.9] tracking-[-0.04em] text-foreground/[0.04]',
+        'pointer-events-none select-none text-[clamp(64px,8vw,140px)] [font-weight:590] leading-[0.9] tracking-[-0.04em] text-foreground/[0.04]',
         className,
       )}
       aria-hidden

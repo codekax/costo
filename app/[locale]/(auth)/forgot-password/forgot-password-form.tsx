@@ -10,7 +10,6 @@ import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { requestPasswordReset } from '@/actions/auth/request-password-reset';
 import { RequestPasswordResetSchema } from '@/lib/schemas/auth';
 
@@ -39,32 +38,34 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl leading-[1.1] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.05] lg:tracking-[-0.72px]">
+    <div className="space-y-7">
+      <div className="space-y-1.5 text-center">
+        <h1 className="text-[28px] leading-[1.15] tracking-[-0.02em] [font-weight:590]">
           {t('forgotPassword')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {sent ? (
-          <p className="text-sm text-muted-foreground">{t('checkEmail')}</p>
-        ) : (
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">{t('email')}</Label>
-              <Input id="email" type="email" autoComplete="email" {...form.register('email')} />
-            </div>
-            <Button type="submit" disabled={pending} className="w-full">
-              {pending ? '…' : t('magicLink')}
-            </Button>
-            <div className="text-center text-sm text-muted-foreground">
-              <Link href="/login" className="hover:text-foreground">
-                {t('signIn')}
-              </Link>
-            </div>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+        </h1>
+      </div>
+
+      {sent ? (
+        <div className="rounded-lg border border-border bg-status-info px-4 py-3 text-center text-sm text-status-info-foreground">
+          {t('checkEmail')}
+        </div>
+      ) : (
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">{t('email')}</Label>
+            <Input id="email" type="email" autoComplete="email" {...form.register('email')} />
+          </div>
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? '…' : t('magicLink')}
+          </Button>
+        </form>
+      )}
+
+      <p className="text-center text-sm text-muted-foreground">
+        <Link href="/login" className="[font-weight:510] text-foreground transition-colors hover:text-link">
+          {t('signIn')}
+        </Link>
+      </p>
+    </div>
   );
 }

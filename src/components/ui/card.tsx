@@ -13,7 +13,7 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card"
       className={cn(
-        'flex flex-col gap-5 rounded-[18px] border border-border bg-card py-5 text-card-foreground sm:py-6',
+        'flex flex-col gap-5 rounded-lg border border-border bg-card py-5 text-card-foreground sm:py-6',
         className,
       )}
       {...props}
@@ -41,7 +41,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
       className={cn(
         // iOS Headline — 17/22 weight 600, conservative size for in-card titles.
         // Page-level titles use <h1> with the LargeTitle scale instead.
-        'text-[17px] leading-[1.29] tracking-[-0.02em] [font-weight:600]',
+        'text-[17px] leading-[1.29] tracking-[-0.02em] [font-weight:590]',
         className,
       )}
       {...props}

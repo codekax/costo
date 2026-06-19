@@ -17,7 +17,9 @@
     "yes": "Sí",
     "no": "No",
     "retry": "Reintentar",
-    "appName": "costo"
+    "appName": "costo",
+    "name": "Nombre",
+    "contact": "Contacto"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -38,7 +40,9 @@
     "loginTitle": "Bienvenido de vuelta",
     "loginSubtitleClean": "Accedé a tu workspace de gastos.",
     "noAccount": "¿Todavía no tenés cuenta?",
-    "createOne": "Crear una"
+    "createOne": "Crear una",
+    "or": "o",
+    "haveAccount": "¿Ya tenés una cuenta?"
   },
   "authHero": {
     "brand": "costo",
@@ -67,6 +71,19 @@
     "navigation": "Navegación",
     "collapseSidebar": "Colapsar menú lateral",
     "expandSidebar": "Expandir menú lateral"
+  },
+  "breadcrumbs": {
+    "dashboard": "Inicio",
+    "expenses": "Gastos",
+    "projects": "Proyectos",
+    "categories": "Categorías",
+    "vendors": "Proveedores",
+    "import": "Importar",
+    "settings": "Ajustes",
+    "profile": "Perfil",
+    "workspaces": "Workspaces",
+    "members": "Miembros",
+    "detail": "Detalle"
   },
   "errors": {
     "invalid_input": "Revisá los datos ingresados",
@@ -157,7 +174,12 @@
     "createCategoryCta": "Crear categoría",
     "saveAndAddAnother": "Guardar y agregar otro",
     "saveExpenseWithAmount": "Guardar gasto {amount}",
-    "descriptionPlaceholderRich": "Ej: Cemento para columnas"
+    "descriptionPlaceholderRich": "Ej: Cemento para columnas",
+    "colDate": "Fecha",
+    "colDescription": "Descripción",
+    "colCategory": "Categoría",
+    "colProject": "Proyecto",
+    "colAmount": "Monto"
   },
   "projects": {
     "title": "Proyectos",
@@ -203,7 +225,9 @@
     "budget": "Presupuesto: {amount}",
     "deleteTitle": "Borrar proyecto",
     "deleteDescription": "Esto va a borrar el proyecto {name} y todos sus gastos asociados de forma permanente. No se puede deshacer.",
-    "typeToConfirm": "Escribí {name} para confirmar"
+    "typeToConfirm": "Escribí {name} para confirmar",
+    "colType": "Tipo",
+    "colExpenses": "Gastos"
   },
   "categories": {
     "title": "Categorías",
@@ -313,7 +337,11 @@
     "invitationCreated": "Invitación creada",
     "invitationCreatedDescription": "Le mandamos un email. Si no le llega, podés pasarle este link directo:",
     "copyLinkAria": "Copiar link",
-    "done": "Listo"
+    "done": "Listo",
+    "colMember": "Miembro",
+    "colRole": "Rol",
+    "colExpires": "Vence",
+    "colEmail": "Email"
   },
   "acceptInvitation": {
     "invalidTitle": "Invitación inválida",
@@ -417,6 +445,7 @@
     "last12Months": "Últimos 12 meses",
     "monthlyTitle": "Evolución mensual",
     "monthlyDescription": "ARS y USD acumulados por mes",
+    "forecastLabel": "Proyección",
     "activeProjects": "Proyectos activos",
     "topVendors": "Top proveedores",
     "topVendorsDescription": "Por monto total",
@@ -506,5 +535,29 @@
     "accountCreated": "Cuenta creada — revisá tu email para confirmar.",
     "csvDownloaded": "CSV descargado",
     "welcome": "¡Bienvenido!"
+  },
+  "landing": {
+    "navLogin": "Iniciar sesión",
+    "navSignup": "Crear cuenta",
+    "eyebrow": "Hecho para el mundo real, no para la demo",
+    "heroTitle": "Controlá cada gasto entre proyectos y",
+    "heroTitleAccent": "monedas.",
+    "heroSubtitle": "costo reemplaza tu planilla: seguimiento de gastos multi-proyecto y multi-moneda (ARS/USD) que podés compartir con tu pareja o familia.",
+    "ctaPrimary": "Empezar",
+    "ctaSecondary": "Iniciar sesión",
+    "featuresEyebrow": "Por qué costo",
+    "featuresTitle": "Todo lo que tu planilla no podía hacer",
+    "feature1Title": "Multi-moneda bien resuelto",
+    "feature1Body": "ARS y USD con tasa FX guardada por gasto — tus reportes no cambian cuando se mueve la cotización.",
+    "feature2Title": "Espacios compartidos",
+    "feature2Body": "Invitá a tu pareja o familia. Todos ven los mismos proyectos, categorías y totales en tiempo real.",
+    "feature3Title": "Importá tu Excel",
+    "feature3Body": "Traé tu planilla actual en menos de un minuto. Las categorías y proveedores nuevos se crean al vuelo.",
+    "mockHeader": "Refacción · Este mes",
+    "mockTotal": "Total del mes",
+    "mockCat1": "Materiales",
+    "mockCat2": "Mano de obra",
+    "mockCat3": "Permisos",
+    "footerLegal": "costo · ARS · USD · ES · EN"
   }
 }

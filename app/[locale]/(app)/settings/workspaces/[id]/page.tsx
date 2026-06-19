@@ -5,6 +5,7 @@ import { Users2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageTitle } from '@/components/layout/page-title';
 import { createServerClient } from '@/lib/supabase/server';
 import { getWorkspaceById } from '@/lib/db/queries/workspaces';
 import { WorkspaceSettingsForm } from './workspace-settings-form';
@@ -28,12 +29,11 @@ export default async function WorkspaceDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <PageTitle>{ws.name}</PageTitle>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">
-              {ws.name}
-            </h1>
             <Badge variant="outline" className="capitalize">
               {ws.kind}
             </Badge>

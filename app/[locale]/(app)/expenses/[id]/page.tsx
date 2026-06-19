@@ -3,6 +3,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageTitle } from '@/components/layout/page-title';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getExpenseById } from '@/lib/db/queries/expenses';
 import { formatCurrency, formatDate } from '@/utils/format';
@@ -27,12 +28,11 @@ export default async function ExpenseDetailPage({
       className="mx-auto max-w-2xl space-y-6"
       style={{ viewTransitionName: `expense-${id}` }}
     >
+      <PageTitle>{expense.description || t('detailFallbackTitle')}</PageTitle>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl leading-[1.15] tracking-[-0.5px] [font-weight:500] sm:text-3xl sm:tracking-[-0.6px] lg:text-[36px] lg:leading-[1.22] lg:tracking-[-0.72px]">
-            {expense.description || t('detailFallbackTitle')}
-          </h1>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span>{formatDate(expense.paid_at)}</span>
             <span aria-hidden>·</span>
             <Badge
@@ -53,7 +53,7 @@ export default async function ExpenseDetailPage({
           <CardTitle className="text-base">{t('amountSectionTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:540] sm:text-3xl">
+          <p className="truncate text-2xl tabular-nums tracking-[-0.03em] [font-weight:510] sm:text-3xl">
             {formatCurrency(Number(expense.amount), expense.currency)}
           </p>
           <p className="text-sm tabular-nums text-muted-foreground">

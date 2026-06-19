@@ -3,11 +3,18 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Plus, Folder, Archive } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { DataTable } from '@/components/ui/data-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
-import { PageHeader } from '@/components/ui/page-header';
+import { PageTitle } from '@/components/layout/page-title';
 import { requireWorkspaceContext } from '@/lib/workspace-context';
 import { getProjects } from '@/lib/db/queries/projects';
 import { formatCurrency } from '@/utils/format';
@@ -20,34 +27,27 @@ export default async function ProjectsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('projects');
+  const tCommon = await getTranslations('common');
 
   const { workspace, supabase } = await requireWorkspaceContext();
   const projects = await getProjects(supabase, workspace.id, { archived: false });
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('title')}
-        description={
-          projects.length === 0
-            ? t('noProjectsYet')
-            : t('summaryActive', { count: projects.length })
-        }
-        actions={
-          <>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/projects/archived">
-                <Archive className="mr-1 size-4" /> {t('archived')}
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/projects/new">
-                <Plus className="mr-1 size-4" /> {t('newProject')}
-              </Link>
-            </Button>
-          </>
-        }
-      />
+      <PageTitle>{t('title')}</PageTitle>
+
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/projects/archived">
+            <Archive className="mr-1 size-4" /> {t('archived')}
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href="/projects/new">
+            <Plus className="mr-1 size-4" /> {t('newProject')}
+          </Link>
+        </Button>
+      </div>
 
       {projects.length === 0 ? (
         <EmptyState
@@ -63,57 +63,47 @@ export default async function ProjectsPage({
           }
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p) => {
-            const progressArs =
-              p.budget_ars && Number(p.budget_ars) > 0
-                ? Math.min(100, (p.total_ars / Number(p.budget_ars)) * 100)
-                : null;
-            const progressUsd =
-              p.budget_usd && Number(p.budget_usd) > 0
-                ? Math.min(100, (p.total_usd / Number(p.budget_usd)) * 100)
-                : null;
-            return (
-              <Link key={p.id} href={`/projects/${p.id}`}>
-                <Card className="h-full transition-colors hover:bg-foreground/5">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-base">{p.name}</CardTitle>
-                      <Badge variant="outline" className="capitalize">
-                        {p.type}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-3">
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t('totalArs')}</p>
-                        <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
-                          {formatCurrency(p.total_ars, 'ARS')}
-                        </p>
-                        {progressArs !== null && (
-                          <Progress value={progressArs} className="mt-1 h-1" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t('totalUsd')}</p>
-                        <p className="truncate text-base [font-weight:540] tabular-nums tracking-[-0.01em]">
-                          {formatCurrency(p.total_usd, 'USD')}
-                        </p>
-                        {progressUsd !== null && (
-                          <Progress value={progressUsd} className="mt-1 h-1" />
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {t('expensesCount', { count: p.expense_count })}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
+        <DataTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{tCommon('name')}</TableHead>
+                <TableHead>{t('colType')}</TableHead>
+                <TableHead className="text-right">{t('totalArs')}</TableHead>
+                <TableHead className="text-right">{t('totalUsd')}</TableHead>
+                <TableHead className="text-right">{t('colExpenses')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {projects.map((p) => (
+                <TableRow key={p.id} className="group relative cursor-pointer">
+                  <TableCell className="[font-weight:510] text-foreground">
+                    <Link
+                      href={`/projects/${p.id}`}
+                      className="absolute inset-0"
+                      aria-label={p.name}
+                    />
+                    <span className="group-hover:underline">{p.name}</span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {p.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatCurrency(p.total_ars, 'ARS')}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatCurrency(p.total_usd, 'USD')}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">
+                    {p.expense_count}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DataTable>
       )}
     </div>
   );

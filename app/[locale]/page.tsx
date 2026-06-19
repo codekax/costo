@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@/lib/supabase/server';
+import { Landing } from '@/components/landing/landing';
 
 export default async function LocaleRoot() {
   const supabase = await createServerClient();
@@ -7,5 +8,7 @@ export default async function LocaleRoot() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  redirect(user ? '/dashboard' : '/login');
+  if (user) redirect('/dashboard');
+
+  return <Landing />;
 }

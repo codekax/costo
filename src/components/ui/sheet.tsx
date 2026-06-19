@@ -115,7 +115,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-2xl tracking-[-0.48px] [font-weight:500] text-foreground", className)}
+      className={cn("text-2xl tracking-[-0.48px] [font-weight:510] text-foreground", className)}
       {...props}
     />
   )
@@ -128,7 +128,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-base text-muted-foreground [font-weight:450]", className)}
+      className={cn("text-base text-muted-foreground [font-weight:400]", className)}
       {...props}
     />
   )
