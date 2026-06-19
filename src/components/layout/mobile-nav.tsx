@@ -53,7 +53,11 @@ export function MobileNav({
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="flex w-[min(20rem,85vw)] flex-col bg-card p-0">
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="flex w-[min(20rem,85vw)] flex-col bg-card p-0"
+      >
         <SheetHeader
           className="border-b border-border p-3"
           style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}

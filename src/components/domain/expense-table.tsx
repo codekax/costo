@@ -28,10 +28,10 @@ export function ExpenseTable({ expenses }: { expenses: ExpenseWithRelations[] })
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[104px]">{t('colDate')}</TableHead>
+            <TableHead className="w-[88px] sm:w-[104px]">{t('colDate')}</TableHead>
             <TableHead>{t('colDescription')}</TableHead>
-            <TableHead>{t('colCategory')}</TableHead>
-            <TableHead className="hidden md:table-cell">{t('colProject')}</TableHead>
+            <TableHead className="hidden sm:table-cell">{t('colCategory')}</TableHead>
+            <TableHead className="hidden lg:table-cell">{t('colProject')}</TableHead>
             <TableHead className="text-right">{t('colAmount')}</TableHead>
             <TableHead className="w-10" />
           </TableRow>
@@ -39,7 +39,7 @@ export function ExpenseTable({ expenses }: { expenses: ExpenseWithRelations[] })
         <TableBody>
           {expenses.map((e) => (
             <TableRow key={e.id} className="group relative cursor-pointer">
-              <TableCell className="w-[104px] whitespace-nowrap text-muted-foreground">
+              <TableCell className="w-[88px] whitespace-nowrap text-muted-foreground sm:w-[104px]">
                 <Link
                   href={`/expenses/${e.id}`}
                   className="absolute inset-0"
@@ -52,7 +52,7 @@ export function ExpenseTable({ expenses }: { expenses: ExpenseWithRelations[] })
                   {e.description || e.category.name}
                 </span>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden sm:table-cell">
                 <span className="inline-flex max-w-[160px] items-center gap-2 whitespace-nowrap">
                   <span
                     className="size-2.5 shrink-0 rounded-full"
@@ -62,7 +62,7 @@ export function ExpenseTable({ expenses }: { expenses: ExpenseWithRelations[] })
                   <span className="truncate text-muted-foreground">{e.category.name}</span>
                 </span>
               </TableCell>
-              <TableCell className="hidden text-muted-foreground md:table-cell">
+              <TableCell className="hidden text-muted-foreground lg:table-cell">
                 {e.project ? e.project.name : t('rowProjectGeneral')}
               </TableCell>
               <TableCell className="text-right">

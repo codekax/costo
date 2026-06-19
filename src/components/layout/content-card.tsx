@@ -33,8 +33,8 @@ export function ContentCard({
         workspace={workspace}
         workspaces={workspaces}
       />
-      <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
-        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
+        <div className="mx-auto w-full min-w-0 max-w-6xl">{children}</div>
       </div>
     </main>
   );

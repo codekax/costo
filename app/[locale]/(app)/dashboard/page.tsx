@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CategoryDonut } from '@/components/charts/category-donut';
 import { MonthlyEvolution } from '@/components/charts/monthly-evolution';
 import { ProjectProgressList } from '@/components/charts/project-progress';
-import { ExpenseRow } from '@/components/domain/expense-row';
+import { ExpenseTable } from '@/components/domain/expense-table';
 
 import { TotalCard } from '@/components/dashboard/total-card';
 import { PeriodSelector } from '@/components/dashboard/period-selector';
@@ -136,7 +136,7 @@ export default async function DashboardPage({
           />
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="reveal cv-chart-card">
+            <Card className="reveal">
               <CardHeader>
                 <CardTitle className="text-base">{t('byCategory')}</CardTitle>
                 <CardDescription>{t('last12Months')}</CardDescription>
@@ -157,7 +157,7 @@ export default async function DashboardPage({
               </CardContent>
             </Card>
 
-            <Card className="reveal cv-chart-card">
+            <Card className="reveal">
               <CardHeader>
                 <CardTitle className="text-base">{t('monthlyTitle')}</CardTitle>
                 <CardDescription>{t('monthlyDescription')}</CardDescription>
@@ -187,33 +187,26 @@ export default async function DashboardPage({
             </Card>
           </div>
 
-          <div className="grid gap-4">
-            <Card className="reveal cv-card">
-              <CardHeader>
-                <CardTitle className="text-base">{t('activeProjects')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ProjectProgressList projects={projects} />
-              </CardContent>
-            </Card>
+          <Card className="reveal">
+            <CardHeader>
+              <CardTitle className="text-base">{t('activeProjects')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProjectProgressList projects={projects} />
+            </CardContent>
+          </Card>
 
-            <Card className="reveal cv-card">
-              <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <CardTitle className="text-base">{t('recentExpenses')}</CardTitle>
-                  <CardDescription>{t('recentExpensesDescription')}</CardDescription>
-                </div>
-                <Button asChild variant="ghost" size="sm" className="self-start sm:self-auto">
-                  <Link href="/expenses">{t('viewAll')}</Link>
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {data.recent.map((e) => (
-                  <ExpenseRow key={e.id} expense={e} />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
+          <section className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-base [font-weight:590] tracking-[-0.01em]">
+                {t('recentExpenses')}
+              </h2>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/expenses">{t('viewAll')}</Link>
+              </Button>
+            </div>
+            <ExpenseTable expenses={data.recent} />
+          </section>
         </>
       )}
     </div>

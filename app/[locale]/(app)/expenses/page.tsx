@@ -95,26 +95,28 @@ export default async function ExpensesPage({
     <div className="space-y-6">
       <PageTitle>{t('title')}</PageTitle>
 
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <div className="flex flex-1 flex-wrap items-center gap-2">
-          <ExpensesScopeTabs
-            scope={scope}
-            projects={projects.map((p) => ({ id: p.id, name: p.name }))}
-          />
-          <div className="min-w-[160px] max-w-xs flex-1">
+      <div className="space-y-2">
+        {/* Search + primary action — always one tidy row */}
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
             <SearchInput />
           </div>
-          <FilterBar
-            categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <ExportCsvButton workspaceId={workspace.id} />
-          <Button asChild>
+          <Button asChild className="shrink-0">
             <Link href="/expenses/new">
               <Plus className="mr-1 size-4" /> {t('newExpense')}
             </Link>
           </Button>
+        </div>
+        {/* Scope + filters + export — horizontal scroll on mobile, wrap on desktop */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden">
+          <ExpensesScopeTabs
+            scope={scope}
+            projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+          />
+          <FilterBar
+            categories={categories.map((c) => ({ id: c.id, name: c.name, color: c.color }))}
+          />
+          <ExportCsvButton workspaceId={workspace.id} className="sm:ml-auto" />
         </div>
       </div>
 

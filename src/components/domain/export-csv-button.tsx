@@ -9,8 +9,15 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { exportCsv } from '@/actions/import-export/export-csv';
 import { parseExpenseFiltersFromSearchParams } from '@/lib/expense-filters';
+import { cn } from '@/lib/utils';
 
-export function ExportCsvButton({ workspaceId }: { workspaceId: string }) {
+export function ExportCsvButton({
+  workspaceId,
+  className,
+}: {
+  workspaceId: string;
+  className?: string;
+}) {
   const tErrors = useTranslations('errors');
   const tToasts = useTranslations('toasts');
   const tExpenses = useTranslations('expenses');
@@ -41,7 +48,13 @@ export function ExportCsvButton({ workspaceId }: { workspaceId: string }) {
   }
 
   return (
-    <Button variant="outline" size="sm" onClick={onClick} disabled={pending}>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onClick}
+      disabled={pending}
+      className={cn('shrink-0', className)}
+    >
       <Download className="mr-1 size-4" />
       {pending ? tExpenses('exporting') : tExpenses('exportCsv')}
     </Button>
