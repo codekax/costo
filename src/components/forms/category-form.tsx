@@ -8,7 +8,7 @@ import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Eyebrow } from '@/components/ui/mastercard';
+import { Eyebrow } from '@/components/ui/editorial';
 import { CreateCategorySchema } from '@/lib/schemas/category';
 import { createCategory } from '@/actions/categories/create-category';
 import { updateCategory } from '@/actions/categories/update-category';

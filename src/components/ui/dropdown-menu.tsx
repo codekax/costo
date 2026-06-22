@@ -155,7 +155,6 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        // Mastercard: eyebrow-style dropdown labels — uppercase, +4% tracking, weight 700
         "px-3 py-2 text-xs [font-weight:590] uppercase tracking-[0.56px] text-muted-foreground data-[inset]:pl-8",
         className
       )}

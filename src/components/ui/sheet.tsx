@@ -62,7 +62,6 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          // Mastercard: popover surface with atmospheric L2 shadow
           "fixed z-50 flex flex-col gap-4 bg-popover shadow-md transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
           side === "right" &&
             "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
@@ -78,7 +77,7 @@ function SheetContent({
       >
         {children}
         {showCloseButton && (
-          <SheetPrimitive.Close className="absolute top-5 right-5 rounded-full size-9 inline-flex items-center justify-center border border-foreground/20 opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:bg-foreground/5 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+          <SheetPrimitive.Close className="absolute top-5 right-5 rounded-full size-9 inline-flex items-center justify-center border border-border opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:bg-accent focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
             <XIcon className="size-4" />
             <span className="sr-only">{t("close")}</span>
           </SheetPrimitive.Close>

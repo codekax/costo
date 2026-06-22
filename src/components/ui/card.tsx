@@ -3,10 +3,8 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Apple utility card. Pure white surface, 18px radius (Apple's
- * `{rounded.lg}` for store / accessories grid). Hairline border supplies the
- * separation against the Parchment canvas — no shadow, no gradient. Elevation
- * comes from the canvas-vs-card surface change.
+ * Linear card. `bg-card` surface, 8px radius (`rounded-lg`), hairline border —
+ * no shadow, no gradient. Elevation comes from the canvas-vs-card surface step.
  */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -39,9 +37,9 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-title"
       className={cn(
-        // iOS Headline — 17/22 weight 600, conservative size for in-card titles.
-        // Page-level titles use <h1> with the LargeTitle scale instead.
-        'text-[17px] leading-[1.29] tracking-[-0.02em] [font-weight:590]',
+        // Linear in-card title — 15px / 590, tight tracking. Section titles can
+        // bump to text-base via className; page titles live in the top bar.
+        'text-[15px] leading-[1.4] tracking-[-0.011em] [font-weight:590]',
         className,
       )}
       {...props}
@@ -54,8 +52,8 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-description"
       className={cn(
-        // iOS subhead — 15/20 secondaryLabel
-        'text-[15px] leading-[1.33] text-muted-foreground [font-weight:400]',
+        // Linear secondary text — 13px muted
+        'text-[13px] leading-[1.45] text-muted-foreground [font-weight:400]',
         className,
       )}
       {...props}

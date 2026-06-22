@@ -25,7 +25,7 @@ export function EmptyState({
   return (
     <Card className={className}>
       <CardContent className={cn('flex flex-col items-center gap-6 py-24 text-center')}>
-        {/* Circular portrait treatment — icon orbits inside a cream-tinted circle */}
+        {/* Icon inside a muted circle */}
         <div className="flex size-20 items-center justify-center rounded-full bg-muted">
           <Icon className="size-8 text-muted-foreground" />
         </div>

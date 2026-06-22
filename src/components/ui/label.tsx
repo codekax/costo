@@ -6,9 +6,7 @@ import { Label as LabelPrimitive } from 'radix-ui';
 import { cn } from '@/lib/utils';
 
 /**
- * Mastercard-language label:
- *  - Eyebrow treatment: 14px / weight 700 / +4% tracking / uppercase
- *  - Pairs with form inputs as the canonical field-label signal
+ * Form field label — pairs with inputs as the field-label signal.
  */
 function Label({
   className,

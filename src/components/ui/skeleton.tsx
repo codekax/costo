@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 /**
  * Apple-language skeleton primitive.
  *  - Subtle pulse on a low-opacity foreground tint.
- *  - Default radius `rounded-md` (11px Pearl) — ideal for text & small chips.
+ *  - Default radius `rounded-md` (6px) — ideal for text & small chips.
  *    For card- or row-shaped skeletons, override with `rounded-lg` (card)
  *    or `rounded-2xl` (row) so the placeholder matches the real surface.
  *  - Lower opacity in dark mode so the skeleton doesn't compete with the
